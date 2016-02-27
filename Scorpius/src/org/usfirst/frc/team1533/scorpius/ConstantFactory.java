@@ -36,10 +36,10 @@ public class ConstantFactory {
 		public final static double SWERVE_STEER_CAP = 1; //speed limit on the steering motor
 		
 		//swerve module encoder offsets (degrees)
-		public final static double FL_ENC_OFFSET = 79;
-		public final static double FR_ENC_OFFSET = 208;
-		public final static double BL_ENC_OFFSET = 138;
-		public final static double BR_ENC_OFFSET = 42;
+		public final static double FL_ENC_OFFSET = 59+14+180+26;
+		public final static double FR_ENC_OFFSET = 103-10;
+		public final static double BL_ENC_OFFSET = 98-85+90+6;
+		public final static double BR_ENC_OFFSET = 135+13+91;
 		
 		//wheel base dimensions measures where the wheels touch the ground
 		public final static double WHEEL_BASE_WIDTH = 23;
@@ -66,7 +66,8 @@ public class ConstantFactory {
 		public final static double STINGER_POWER_MAXIMUM_PERCENT = 1.0; //UPDATE
 	}
 	public static class Sensory {
-		public final static int BUTTON_SEARCH_MAPPING_ID_MAX = 15;
+		public final static double GAMEPAD_MOVING_THRESHOLD = 0.08;
+		public final static int BUTTON_SEARCH_MAPPING_ID_MAX = 12;
 	}
 	
 	public static class RobotMap {

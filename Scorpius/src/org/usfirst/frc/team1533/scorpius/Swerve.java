@@ -2,6 +2,7 @@ package org.usfirst.frc.team1533.scorpius;
 
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Scheduler;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Swerve {
 	
@@ -108,6 +109,7 @@ public class Swerve {
 			} else {
 				modules[i].set(modules[i].steerEncoder.getAngle(), 0); 
 			}
+			SmartDashboard.putNumber("Encoder "+i, modules[i].steerEncoder.getVoltage());
 		}
 	}
 	
@@ -130,8 +132,9 @@ public class Swerve {
 		
 		//Scheduler for PID
 		Scheduler.getInstance().run();
-		//Drive
-		Drive(Sensory.swerve.x, Sensory.swerve.y, Sensory.swerve.z, fieldOrientation);
+		//Check that gamepad 1 isn't driving
+		boolean overrideControl = Sensory.Gamepad0Driving();
+		Drive(overrideControl ? Sensory.swerve.x : Sensory.panzer.left, Sensory.swerve.y, Sensory.swerve.z, fieldOrientation);
 	}
 	
 	//This receives all Gamepad Button Down events from Sensory

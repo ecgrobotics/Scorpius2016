@@ -71,7 +71,6 @@ public class Actuator {
 	public static void OnButtonDown (ButtonMapping button, int gamepad) {
 		//Gamepad 1 controls the actuator
 		if (gamepad == 1) {
-			
 			//Reset forward orientation
 			if (button.equals(ButtonMapping.L1)) {
 				current = 0.2;
