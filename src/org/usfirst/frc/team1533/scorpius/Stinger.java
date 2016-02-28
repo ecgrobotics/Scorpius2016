@@ -16,6 +16,7 @@ public class Stinger {
 	//Timing vars
 	static Timer timer;
 	static int buttonPressed;
+	static long shootStartTime = -1;
 	
 	public static void Initialize () {
 		//Initialize Sparks
@@ -60,11 +61,16 @@ public class Stinger {
 		if (Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 1)) {
 			buttonPressed = 0;
 			runStingerMotor();
-			try {
-				timer.wait(Math.round(ConstantFactory.Stinger.SHOOTER_DELAY*1000));
-			} catch (InterruptedException e) {
-				// TODO Auto-generated catch block
-				e.printStackTrace();
+//			try {
+//				timer.wait(Math.round(ConstantFactory.Stinger.SHOOTER_DELAY*1000));
+//			} catch (InterruptedException e) {
+//				// TODO Auto-generated catch block
+//				e.printStackTrace();
+//			}
+			if (shootStartTime < 0) {
+				shootStartTime = System.currentTimeMillis();
+			} else if (System.currentTimeMillis()-shootStartTime > ConstantFactory.Stinger.SHOOTER_DELAY * 1000) {
+				runRollerMotor();
 			}
 //			In case it continuously throws above method
 //			timer.schedule(new TimerTask() {
@@ -72,19 +78,21 @@ public class Stinger {
 //			  public void run() {
 //			  }
 //			}, Math.round(ConstantFactory.Stinger.SHOOTER_DELAY*1000));
-			runRollerMotor();
+//			runRollerMotor();
 		}
 		//Hold down to grab ball
 		else if (Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 1)) {
 			buttonPressed = 1;
 			runRollerMotor();
 			runStingerMotor();
+			shootStartTime = -1;
 		}
 		//Slow all motors
 		else {
 			buttonPressed = 2;
 			runRollerMotor();
 			runStingerMotor();
+			shootStartTime = -1;
 		}
 
 	}

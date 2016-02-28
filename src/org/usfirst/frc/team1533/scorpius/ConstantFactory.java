@@ -6,14 +6,14 @@ import com.ni.vision.NIVision;
 public class ConstantFactory {
 	
 	public static class Swerve {
-		public final static double SWERVE_STEER_P = 1; //UPDATE
+		public final static double SWERVE_STEER_P = 2; //UPDATE
 		public final static double SWERVE_STEER_I = 0; //UPDATE
 		public final static double SWERVE_STEER_D = 0; //UPDATE
 		public final static double SWERVE_STEER_CAP = 1; //speed limit on the steering motor
 		
 		//swerve module encoder offsets (degrees)
-		public final static double FL_ENC_OFFSET = 59+14+180+26-3+5;
-		public final static double FR_ENC_OFFSET = 103-10-4+10;
+		public final static double FL_ENC_OFFSET = 59+14+180+26-3;
+		public final static double FR_ENC_OFFSET = 103-13;
 		public final static double BL_ENC_OFFSET = 98-85+90+6;
 		public final static double BR_ENC_OFFSET = 135+13+91+3;
 		
@@ -75,8 +75,8 @@ public class ConstantFactory {
 		
 		public final static int ACTUATOR = 10;
 		
-		public final static int STINGER_L = 11;
-		public final static int STINGER_R = 12;
+		public final static int STINGER_L = 12;
+		public final static int STINGER_R = 11;
 		public final static int ROLLER = 13;
 		
 		public final static int CLIMB_L = 1;

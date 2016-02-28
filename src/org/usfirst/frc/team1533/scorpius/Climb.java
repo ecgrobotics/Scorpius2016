@@ -13,7 +13,7 @@ public class Climb {
 		
 	}
 	public static void Update() {
-		target = Sensory.GetButtonDown(ButtonMapping.Y, 1) ? 0.8 : Sensory.GetButtonDown(ButtonMapping.A, 1) ? -0.8 : 0;
+		target = Sensory.GetButtonDown(ButtonMapping.Y, 1) ? 1 : Sensory.GetButtonDown(ButtonMapping.A, 1) ? -1 : 0;
 		climbL.set(target);
 		climbR.set(-target);
 	}

@@ -133,6 +133,7 @@ public class Swerve {
 		for (SwerveModule module : modules) module.disable();
 	}
 	
+	static boolean lastFlip = false;
 	public static void Update () {
 		//Check for gyro reset button
 		//if (Sensory.GetButtonDown(ButtonMapping.LEFT_BUMPER, 0)) Gyro.Reset();
@@ -142,7 +143,8 @@ public class Swerve {
 		SmartDashboard.putBoolean("Are motors flipped?", flipMotors);
 		Scheduler.getInstance().run();
 		//Check if driver wishes to flip the driving axes
-		if(Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 0)) flipMotors = !flipMotors;
+		if(Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 0) && !lastFlip) flipMotors = !flipMotors;
+		lastFlip = Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 0);
 		//Check if we want to slow down turning
 		boolean slowTurn = Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 0);
 		//Drive
@@ -151,7 +153,18 @@ public class Swerve {
 			Panzer.lockWheels();
 		}
 		else{
-		Drive(Sensory.GetAxis( AxisType.kX, 0) * (flipMotors ? -1 : 1), -Sensory.GetAxis(AxisType.kY, 0) * (flipMotors ? -1 : 1), Sensory.GetAxis(AxisType.kZ, 0) * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1), fieldOrientation);
+			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis( AxisType.kX, 0) * (flipMotors ? -1 : 1);
+			double transY = -Sensory.GetAxis(AxisType.kY, 0) * (flipMotors ? -1 : 1);
+			double rotation = Sensory.GetAxis(AxisType.kZ, 0) * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
+			SmartDashboard.putNumber("gyro angle", Gyro.GetAngle());
+			if (!fieldOrientation) {
+				if ((transX != 0 || transY != 0) && rotation == 0) {
+//					rotation = Gyro.GetAngle() * -.07;
+				} else {
+					Gyro.Reset();
+				}
+			}
+			Drive(transX, transY, rotation, fieldOrientation);
 		}
 		//DEBUG
 		SmartDashboard.putBoolean("Field Orientation", fieldOrientation);

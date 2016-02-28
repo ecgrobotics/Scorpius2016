@@ -12,6 +12,7 @@ public class Sensory {
 	//State vars
 	static Joystick pad0;
 	static Joystick pad1;
+	static boolean isHybridEnabled;
 	
 	//Internal
 	static boolean[] buttonsPressed = new boolean[ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX * 2];
@@ -33,15 +34,20 @@ public class Sensory {
 	}
 		
 	public static double GetAxis (AxisType axis, int gamepad) {
-		return gamepad == 0 ? pad0.getAxis(axis) : pad1.getAxis(axis);
+		double ax = gamepad == 0 ? pad0.getAxis(axis) : pad1.getAxis(axis);
+		if (Math.abs(ax) < .05) return 0;
+		return ax;
 	}
 	
 	public static double GetAxis (int axis, int gamepad) {
-		return gamepad == 0 ? pad0.getRawAxis(axis) : pad1.getRawAxis(axis);
+		double ax = gamepad == 0 ? pad0.getRawAxis(axis) : pad1.getRawAxis(axis);
+		if (Math.abs(ax) < .05) return 0;
+		return ax;
 	}
 	
 	public static boolean GetButtonDown (ButtonMapping button, int gamepad) { //DEPLOY //+1 offset
-		return buttonsPressed[button.GetMappingID()+ (gamepad == 0 ? 0 : ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX)];
+		return (gamepad==0 ? pad0 : pad1).getRawButton(button.GetMappingID());
+//		return buttonsPressed[button.GetMappingID()+ (gamepad == 0 ? 0 : ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX)];
 	}
 	public static double getDPad (int axis, int gamepad){
 		return gamepad == 0 ? pad0.getRawAxis(axis) : pad1.getRawAxis(axis);
