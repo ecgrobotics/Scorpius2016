@@ -10,11 +10,11 @@ public class ActuatorEncoder extends AnalogInput  {
 	//Constants
 	final static double voltageMin = 0.3; //UPDATE
 	final static double voltageMax = 4.6; //UPDATE
-	final static double voltageRange = 4.6;
 	final static double intersectionAngle = 23.0; //UPDATE
 	final static double pivotLength = 7.0; //UPDATE //inches?
 	final static double maxExtensionLength = 12.0; //UPDATE //inches?
 	final static double slantBaseOffset = 0.8; //UPDATE //inches?
+	final static double angleVoltage = 3;
 	private boolean moveActuator = false;
 	
 	public ActuatorEncoder(int channel) {
@@ -36,15 +36,18 @@ public class ActuatorEncoder extends AnalogInput  {
 	public void Update(){
 		if(Sensory.pad1.getPOV(0) == 90) moveActuator =! moveActuator;
 		if(moveActuator == true){
-			if(getAngle() < Actuator.angle){
+			if(getAverageVoltage() < angleVoltage){
 				Actuator.current = Extensions.Lerp (Actuator.current, 1, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
 		        Actuator.actuator.set(Actuator.current);
-			} else if(getAngle() > Actuator.angle){
+			} else if(getAverageVoltage () > angleVoltage){
 				Actuator.current = Extensions.Lerp (Actuator.current, -1, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
 		        Actuator.actuator.set(Actuator.current);
-			} else Actuator.current = Extensions.Lerp (Actuator.current, -Actuator.current/(ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033) +Actuator.current, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
-			moveActuator = false;
+			} else{
+				moveActuator = false;
+				Actuator.target = 0;
+			}
 		}
+		
 	}
 	@Override
 	public double pidGet () {

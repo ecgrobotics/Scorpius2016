@@ -64,8 +64,6 @@ public class Actuator {
 		target = 0;
 		if(Sensory.pad1.getPOV() == 0) target = 1;
 		else if(Sensory.pad1.getPOV() == 180) target = -1;
-		else if(Sensory.GetButtonDown(ButtonMapping.LEFT_BUMPER, 1)) target = .60;
-		else if(Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 1)) target = -.60;
     	current = Extensions.Lerp (current, target, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
 		actuator.set(current);
 //		angle += target * .1;
