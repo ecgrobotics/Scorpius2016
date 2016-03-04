@@ -34,7 +34,7 @@ public class ActuatorEncoder extends AnalogInput  {
 		return Math.toDegrees(angle); 
 	}
 	public void Update(){
-		if(Sensory.pad1.getPOV(0) == 90) moveActuator =! moveActuator;
+		if(Sensory.GetPOV(0, 1) == 90) moveActuator =! moveActuator;
 		if(moveActuator == true){
 			if(getAverageVoltage() < angleVoltage){
 				Actuator.current = Extensions.Lerp (Actuator.current, 1, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);

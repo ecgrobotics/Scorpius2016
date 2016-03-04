@@ -3,7 +3,6 @@ package org.usfirst.frc.team1533.scorpius;
 import edu.wpi.first.wpilibj.PIDController;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
-import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Actuator {
@@ -62,8 +61,8 @@ public class Actuator {
 //        SmartDashboard.putNumber("Actuator target", target);
 		
 		target = 0;
-		if(Sensory.pad1.getPOV() == 0) target = 1;
-		else if(Sensory.pad1.getPOV() == 180) target = -1;
+		if(Sensory.GetPOV(0, 1) == 0) target = 1;
+		else if(Sensory.GetPOV(0, 1) == 180) target = -1;
     	current = Extensions.Lerp (current, target, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
 		actuator.set(current);
 //		angle += target * .1;

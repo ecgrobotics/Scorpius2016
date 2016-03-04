@@ -1,6 +1,5 @@
 package org.usfirst.frc.team1533.scorpius;
 
-import edu.wpi.first.wpilibj.Joystick.AxisType;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -153,10 +152,9 @@ public class Swerve {
 			Panzer.lockWheels();
 		}
 		else{
-			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis( AxisType.kX, 0) * (flipMotors ? -1 : 1);
-			double transY = -Sensory.GetAxis(AxisType.kY, 0) * (flipMotors ? -1 : 1);
-			double rotation = Sensory.GetAxis(AxisType.kZ, 0) * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
-			SmartDashboard.putNumber("gyro angle", Gyro.GetAngle());
+			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1);
+			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1);
+			double rotation = Sensory.GetAxis(2, 0) * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
 			if (!fieldOrientation) {
 				if ((transX != 0 || transY != 0) && rotation == 0) {
 //					rotation = Gyro.GetAngle() * -.07;

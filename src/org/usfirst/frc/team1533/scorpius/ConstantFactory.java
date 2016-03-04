@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1533.scorpius;
 
-import com.ni.vision.NIVision;
-
 //This class keeps all constants
 public class ConstantFactory {
 	
@@ -49,8 +47,9 @@ public class ConstantFactory {
 		public final static double STINGER_POWER_GRASP_PERCENT = 0.4;
 	}
 	public static class Sensory {
+		public final static double AXIS_SENSITIVITY_THRESHOLD = 0.05;
+		public final static int AXIS_SEARCH_MAPPING_ID_MAX = 4;
 		public final static int BUTTON_SEARCH_MAPPING_ID_MAX = 12;
-		public final static double TANK_OVERRIDE_THRESHOLD = 0.05;
 	}
 	
 	public static class RobotMap {

@@ -1,7 +1,6 @@
 package org.usfirst.frc.team1533.scorpius;
 
 import java.util.Timer;
-import java.util.TimerTask;
 
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
@@ -61,24 +60,11 @@ public class Stinger {
 		if (Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 1)) {
 			buttonPressed = 0;
 			runStingerMotor();
-//			try {
-//				timer.wait(Math.round(ConstantFactory.Stinger.SHOOTER_DELAY*1000));
-//			} catch (InterruptedException e) {
-//				// TODO Auto-generated catch block
-//				e.printStackTrace();
-//			}
 			if (shootStartTime < 0) {
 				shootStartTime = System.currentTimeMillis();
 			} else if (System.currentTimeMillis()-shootStartTime > ConstantFactory.Stinger.SHOOTER_DELAY * 1000) {
 				runRollerMotor();
 			}
-//			In case it continuously throws above method
-//			timer.schedule(new TimerTask() {
-//			  @Override
-//			  public void run() {
-//			  }
-//			}, Math.round(ConstantFactory.Stinger.SHOOTER_DELAY*1000));
-//			runRollerMotor();
 		}
 		//Hold down to grab ball
 		else if (Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 1)) {

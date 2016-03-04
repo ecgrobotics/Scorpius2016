@@ -1,7 +1,5 @@
 package org.usfirst.frc.team1533.scorpius;
 
-import com.ni.vision.NIVision;
-
 public class Vector2 {
 	/**
      * 2D Mathematical Vector
@@ -21,7 +19,7 @@ public class Vector2 {
 		return Math.hypot(x, y);
 	}
 
-	public void Scale(double scalar) {
+	public void Scale (double scalar) {
 		x *= scalar;
 		y *= scalar;
 	}
@@ -48,9 +46,5 @@ public class Vector2 {
 	
 	public String ToString () {
 		return "("+x+","+y+")";
-	}
-	
-	public static Vector2 Parse (NIVision.GetImageSizeResult frameSize) {
-		return new Vector2(frameSize.width, frameSize.height);
 	}
 }
