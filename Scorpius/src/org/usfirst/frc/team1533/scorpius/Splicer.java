@@ -4,33 +4,40 @@ package org.usfirst.frc.team1533.scorpius;
 //callbacks and Scorpius. It manages what gets called
 //when.
 public class Splicer {
-	
-	public static void Start () {
+		
+	public static void Initialize (boolean autonomous) {
+		//Initialize the camera
+		Lucid.Initialize();
 		//Initialize Gyro
 		Gyro.Initialize();
 		//Initialize Sensory
 		Sensory.Initialize();
+		//Initialize Egghead
+		if (autonomous) Egghead.Initialize();
 		//Call all initializers
 		Actuator.Initialize();
-//		Lucid.Initialize();
+		Climb.Initialize();
 		Panzer.Initialize();
 		Swerve.Initialize();
-		Roller.Initialize();
 		Stinger.Initialize();
-		Climb.Initialize();
 	}
 	
 	//Implicitly dynamic timestep
-	public static void Update () {
+	public static void Update (boolean autonomous) {
+		//Update the camera
+		Lucid.Update();
+		//Update Gyro
+		Gyro.Update();
 		//Update Sensory
 		Sensory.Update();
+		//Update Egghead
+		if (autonomous) Egghead.Update();
 		//Call all updates
 		Actuator.Update();
-		//Lucid.Update();
+		Climb.Update();
 		Panzer.Update();
-		Roller.Update();
 		Swerve.Update();
 		Stinger.Update();
-		Climb.Update();
+		
 	}
 }

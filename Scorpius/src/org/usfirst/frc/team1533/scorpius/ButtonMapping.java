@@ -1,14 +1,14 @@
 package org.usfirst.frc.team1533.scorpius;
 
 public enum ButtonMapping { //UPDATE //RENAME //VALUES
-	TRIANGLE (3),
-	SQUARE (0),
-	CIRCLE (2),
-	CROSS (1),
-	L1 (4),
-	L2 (6),
-	R1 (5),
-	R2 (7),
+	B (3),
+	Y (4),
+	A (2),
+	X (1),
+	LEFT_BUMPER (5),
+	LEFT_TRIGGER (7),
+	RIGHT_BUMPER (6),
+	RIGHT_TRIGGER (8),
 	SELECT (8),
 	START (9)
 	;

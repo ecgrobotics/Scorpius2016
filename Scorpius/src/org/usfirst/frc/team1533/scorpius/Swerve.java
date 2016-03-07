@@ -10,6 +10,7 @@ public class Swerve {
 	static double pivotX, pivotY;
 	static SwerveModule[] modules;
 	static boolean fieldOrientation = false;
+	static boolean flipMotors;
 	
 	public static void Initialize () {
 		//initialize array of modules
@@ -64,7 +65,7 @@ public class Swerve {
 	 * @param heading offset in heading in radians (used for field oriented control)
 	 */
 	//INCOMPLETE //UPDATE
-	private static void Drive (double translationX, double translationY, double rotation, boolean fieldOriented) {
+	static void Drive (double translationX, double translationY, double rotation, boolean fieldOriented) {
 		//Calculate a heading-compensation vector
 		Vector2 correctOrientation = CorrectOrientationVector(translationX, translationY);
 		//Check that we can apply heading compensation and apply
@@ -86,6 +87,7 @@ public class Swerve {
 			vects[i].Subtract(pivotVect); //calculate module's position relative to pivot point
 			maxDist = Math.max(maxDist, vects[i].GetMagnitude()); //find farthest distance from pivot
 		}
+	
 		
 		double maxPower = 1;
 		for (int i = 0; i < modules.length; i++) {
@@ -109,10 +111,13 @@ public class Swerve {
 			} else {
 				modules[i].set(modules[i].steerEncoder.getAngle(), 0); 
 			}
-			SmartDashboard.putNumber("Encoder "+i, modules[i].steerEncoder.getVoltage());
 		}
 	}
-	
+	public static void lockWheels(){
+		for(int i = 0; i <modules.length; i++){
+			modules[i].set(90, 0);
+		}
+	}
 	//Graciously plaigarized from Duncan's code :D
 	private static Vector2 CorrectOrientationVector (double x, double y) {
 		double angle = (-Gyro.GetAngle()) * Math.PI / 180;
@@ -127,30 +132,39 @@ public class Swerve {
 		for (SwerveModule module : modules) module.disable();
 	}
 	
+	static boolean lastFlip = false;
 	public static void Update () {
-		//DEBUG
-		
+		//Check for gyro reset button
+		//if (Sensory.GetButtonDown(ButtonMapping.LEFT_BUMPER, 0)) Gyro.Reset();
+		//Check for field orientation toggle
+		//if (Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 0)) fieldOrientation = !fieldOrientation;
 		//Scheduler for PID
+		SmartDashboard.putBoolean("Are motors flipped?", flipMotors);
 		Scheduler.getInstance().run();
-		//Check that gamepad 1 isn't driving
-		boolean overrideControl = Sensory.Gamepad0Driving();
-		Drive(overrideControl ? Sensory.swerve.x : Sensory.panzer.left, Sensory.swerve.y, Sensory.swerve.z, fieldOrientation);
-	}
-	
-	//This receives all Gamepad Button Down events from Sensory
-	//This could be called several times per frame
-	public static void OnButtonDown (ButtonMapping button, int gamepad) {
-		//Gamepad 0 controls Swerve
-		if (gamepad == 0) {
-			//Reset forward orientation
-			if (button.equals(ButtonMapping.L1)) {
-				Gyro.Reset();
-			}
-			//Toggle field orientation
-			if (button.equals(ButtonMapping.R2)) {
-				fieldOrientation = !fieldOrientation;
-			}
+		//Check if driver wishes to flip the driving axes
+		if(Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 0) && !lastFlip) flipMotors = !flipMotors;
+		lastFlip = Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 0);
+		//Check if we want to slow down turning
+		boolean slowTurn = Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 0);
+		//Drive
+		if(Sensory.GetButtonDown(ButtonMapping.B, 0)){
+			lockWheels();
+			Panzer.lockWheels();
 		}
+		else{
+			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1)*.75;
+			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1)* .75;
+			double rotation = Sensory.GetAxis(2, 0) *.75 * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
+			if (!fieldOrientation) {
+				if ((transX != 0 || transY != 0) && rotation == 0) {
+					rotation = Gyro.GetAngle() * -.05;
+				} else {
+					Gyro.Reset();
+				}
+			}
+			Drive(transX, transY, rotation, fieldOrientation);
+		}
+		//DEBUG
+		SmartDashboard.putBoolean("Field Orientation", fieldOrientation);
 	}
-
 }

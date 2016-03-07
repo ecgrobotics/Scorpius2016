@@ -10,20 +10,23 @@ public class VMAbstraction extends IterativeRobot {
 	
     public void robotInit() {
     	//Call Start across the board
-    	Splicer.Start();
+    	Splicer.Initialize(false);
+    	
     }
     
     public void autonomousInit() {
-
+    	//Call Start across the board //Is this already taken care of by autonomousInit?
+    	//Splicer.Initialize(true);
     }
 
     public void autonomousPeriodic() {
-
+    	//Call Update across the board
+    	Splicer.Update(true);
     }
 
     public void teleopPeriodic() {
         //Call Update across the board
-    	Splicer.Update();
+    	Splicer.Update(false);
     }
     
     public void testPeriodic() {

@@ -6,8 +6,8 @@ public class Panzer {
 	
 	//State vars
 	static RobotDrive drive;
-	static boolean fixedHeading; //MOVE //Implement in Sensory
-	
+	 static boolean fixedHeading; //MOVE //Implement in Sensory
+	 
 	//Smoothing vars
 	static double yTarg;
 	static double xTarg;
@@ -17,8 +17,12 @@ public class Panzer {
 	}
 	
 	public static void Update(){ //DEPLOY
-		yTarg = Extensions.Lerp(yTarg, Sensory.panzer.right, 7 * 0.033);
-		xTarg = Extensions.Lerp(xTarg, -Sensory.panzer.left, 7 * 0.033);
+		yTarg = Extensions.Lerp(yTarg, -Sensory.GetAxis(1, Sensory.tankOverride() ? 0 : 1)*(Swerve.flipMotors ? -1 : 1), ConstantFactory.Panzer.HARDNESS_CONSTANT * 0.033);
+		xTarg = Extensions.Lerp(xTarg, -Sensory.GetAxis(2, Sensory.tankOverride() ? 0 : 1)*(Swerve.flipMotors ? -1 : 1), ConstantFactory.Panzer.HARDNESS_CONSTANT * 0.033); //not kTwist
 		drive.arcadeDrive(yTarg, fixedHeading ? Gyro.GetAngle() * ConstantFactory.Panzer.HEADING_SCALE_FACTOR * -1 : xTarg, ConstantFactory.Panzer.APPLY_QUADRATIC_SCALING);
+	}
+	public static void lockWheels(){
+		yTarg = 0;
+		xTarg = 0;
 	}
 }

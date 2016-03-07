@@ -5,63 +5,71 @@ import edu.wpi.first.wpilibj.Joystick;
 //All input must pass through here
 public class Sensory {
 	
-	//State vars
-	static Joystick pad0;
-	static Joystick pad1;
+	//Private State vars
+	public static Joystick pad0;
+	public static Joystick pad1;
 	
-	//Internal
+	//Public vars
+	static boolean isHybridEnabled;
+	
+	//Public //Allow Autonomous override
+	public static double[][] axes = new double[2][];
+	public static boolean[][] buttons = new boolean[2][];
+	public static int[][] povs = new int[2][];
+	
 	
 	public static void Initialize () {
 		//Initialize joysticks
 		pad0 = new Joystick(0);
 		pad1 = new Joystick(1);
+		//Initialize buttons
+		buttons[0] = new boolean[ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX];
+		buttons[1] = new boolean[ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX];
+		//Initialize axes
+		axes[0] = new double[ConstantFactory.Sensory.AXIS_SEARCH_MAPPING_ID_MAX];
+		axes[1] = new double[ConstantFactory.Sensory.AXIS_SEARCH_MAPPING_ID_MAX];
+		//Initialize POVs
+		povs[0] = new int[pad0.getPOVCount()];
+		povs[1] = new int[pad1.getPOVCount()];
+		
 	}
 	
 	public static void Update () {
-		//Update Swerve input values
-		swerve.x = pad0.getRawButton(1) ? 0 : pad0.getX();
-		swerve.y = -pad0.getY(); //UPDATE //Apply smoothing and scaling here
-		swerve.z = pad0.getRawButton(2) ? pad0.getZ()/4 : pad0.getZ(); //UPDATE //Apply smoothing and scaling here
-		//Update Panzer input values
-		panzer.left= pad1.getX();
-		panzer.right= pad1.getRawAxis(3);
-		//Handle button events
-		ProcessButtons();
-
-	}
-	
-	public static boolean Gamepad0Driving () {
-		return Math.abs(pad0.getY()) > ConstantFactory.Sensory.GAMEPAD_MOVING_THRESHOLD || Math.abs(pad0.getX()) > ConstantFactory.Sensory.GAMEPAD_MOVING_THRESHOLD;
-	}
-	
-	private static void ProcessButtons () {
-		//Iterate through the gamepad searching for button presses
-		for (int i = 1; i < ConstantFactory.Sensory.BUTTON_SEARCH_MAPPING_ID_MAX; i++) {
-			//Check for a button press
-			if (pad0.getRawButton(i)) PropagateButtonDown(ButtonMapping.Button(i), 0);
-			if (pad1.getRawButton(i)) PropagateButtonDown(ButtonMapping.Button(i), 1);
+		//Iterate through gamepads
+		for (int g = 0; g < axes.length; g++) {
+			//Iterate through the axes for each gamepad
+			for (int a = 0; a < axes[g].length; a++) {
+				//Get the value of the axis
+				axes[g][a] = (g == 0 ? pad0 : pad1).getRawAxis(a);
+			}
+			//Iterate through buttons for each gamepad
+			for (int b = 0; b < buttons[g].length; b++) {
+				//Get the value of the button
+				buttons[g][b] = (g == 0 ? pad0 : pad1).getRawButton(b);
+			}
+			//Iterate through POV's for each gamepad
+			for (int p = 0; p < povs[g].length; p++) {
+				//Get the value of each point of view
+				povs[g][p] = (g == 0 ? pad0 : pad1).getPOV(p);
+			}
 		}
 	}
 	
-	private static void PropagateButtonDown (ButtonMapping button, int gamepad) {
-		//Notify listeners of button press
-		Actuator.OnButtonDown(button, gamepad);
-		Swerve.OnButtonDown(button, gamepad);
+	public static double GetAxis (int axis, int gamepad) {
+		return Math.abs(axes[gamepad][axis]) > ConstantFactory.Sensory.AXIS_SENSITIVITY_THRESHOLD ? axes[gamepad][axis] : 0; //UPDATE //ConstantFactory
 	}
 	
+	public static boolean GetButtonDown (ButtonMapping button, int gamepad) {
+		return buttons[gamepad][button.GetMappingID()];
+		//return (gamepad==0 ? pad0 : pad1).getRawButton(button.GetMappingID()); //I need the abstraction for autonomous override :/
+	}
 	
-	//Accessors
-	
-	public static class swerve {
-		public static double x;
-		public static double y;
-		public static double z;
+//	public static int GetPOV (int index, int gamepad) {
+//		return povs[gamepad][index >= povs[gamepad].length ? povs[gamepad].length - 1 : index]; //Automatically clamp value so we don't get OutOfBoundsException
+//	}
+//	
+	public static boolean tankOverride() { //INCOMPLETE //Autonomous override
+		return GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0);
 	}
-	public static class panzer {
-		public static double left;
-		public static double right;
-	}
-	public static class actuator {
-		public static double p;
-	}
+
 }
