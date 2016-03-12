@@ -36,21 +36,13 @@ public class ConstantFactory {
 		public final static double ANGLE_MAXIMUM = 90.0; //UPDATE
 		public final static double ANGLE_EQUALITY_THRESHOLD = 1.0; //UPDATE
 		public final static double POWER_MAGNITUDE_MAXIMUM = 1.0; //UPDATE
-<<<<<<< HEAD
 		public final static double HARDNESS_CONSTANT = 4.8;
-=======
-		public final static double HARDNESS_CONSTANT = 5.0;
->>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		public final static double ACTUATOR_STINGER_BASE_LENGTH = 3.0;
 		public final static double STINGER_BASE_PIVOT_LENGTH = 4.0;
 	}
 	
 	public static class Stinger {
-<<<<<<< HEAD
 		public final static double SHOOTER_DELAY = 0.5;
-=======
-		public final static double SHOOTER_DELAY = 0.3;
->>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		public final static double STINGER_POWER_SHOOT_PERCENT = 1.0;
 		public final static double STINGER_POWER_GRASP_PERCENT = 0.4;
 	}

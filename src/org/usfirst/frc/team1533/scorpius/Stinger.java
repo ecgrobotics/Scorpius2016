@@ -42,7 +42,7 @@ public class Stinger {
 			stingerR.set(0);
 		}
 	}
-	public static void runRollerMotor(){
+	public static void runRollerMotor(int buttonPressed){
 		if (buttonPressed == 0) {
 			//shoots ball
 			roller.set(ConstantFactory.Stinger.STINGER_POWER_SHOOT_PERCENT);
@@ -58,25 +58,22 @@ public class Stinger {
 	public static void Update () {
 		//Hold down to shoot
 		if (Sensory.GetButtonDown(ButtonMapping.RIGHT_BUMPER, 1)) {
-			buttonPressed = 0;
 			runStingerMotor();
 			if (shootStartTime < 0) {
 				shootStartTime = System.currentTimeMillis();
 			} else if (System.currentTimeMillis()-shootStartTime > ConstantFactory.Stinger.SHOOTER_DELAY * 1000) {
-				runRollerMotor();
+				runRollerMotor(0);
 			}
 		}
 		//Hold down to grab ball
 		else if (Sensory.GetButtonDown(ButtonMapping.RIGHT_TRIGGER, 1)) {
-			buttonPressed = 1;
-			runRollerMotor();
+			runRollerMotor(1);
 			runStingerMotor();
 			shootStartTime = -1;
 		}
 		//Slow all motors
 		else {
-			buttonPressed = 2;
-			runRollerMotor();
+			runRollerMotor(2);
 			runStingerMotor();
 			shootStartTime = -1;
 		}

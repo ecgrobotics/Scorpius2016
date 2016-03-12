@@ -11,10 +11,7 @@ public class VMAbstraction extends IterativeRobot {
     public void robotInit() {
     	//Call Start across the board
     	Splicer.Initialize(false);
-<<<<<<< HEAD
     	
-=======
->>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
     }
     
     public void autonomousInit() {

@@ -15,11 +15,14 @@ public class Panzer {
 	public static void Initialize () {
 		drive = new RobotDrive(ConstantFactory.RobotMap.L_TREAD, ConstantFactory.RobotMap.R_TREAD);
 	}
+	public static void Drive(double xTarg, double yTarg){
+		drive.arcadeDrive(yTarg, xTarg, true);
+	}
 	
 	public static void Update(){ //DEPLOY
 		yTarg = Extensions.Lerp(yTarg, -Sensory.GetAxis(1, Sensory.tankOverride() ? 0 : 1)*(Swerve.flipMotors ? -1 : 1), ConstantFactory.Panzer.HARDNESS_CONSTANT * 0.033);
 		xTarg = Extensions.Lerp(xTarg, -Sensory.GetAxis(2, Sensory.tankOverride() ? 0 : 1)*(Swerve.flipMotors ? -1 : 1), ConstantFactory.Panzer.HARDNESS_CONSTANT * 0.033); //not kTwist
-		drive.arcadeDrive(yTarg, fixedHeading ? Gyro.GetAngle() * ConstantFactory.Panzer.HEADING_SCALE_FACTOR * -1 : xTarg, ConstantFactory.Panzer.APPLY_QUADRATIC_SCALING);
+		Drive(yTarg, fixedHeading ? Gyro.GetAngle() * ConstantFactory.Panzer.HEADING_SCALE_FACTOR * -1 : xTarg);
 	}
 	public static void lockWheels(){
 		yTarg = 0;

@@ -9,11 +9,7 @@ public class Gyro {
 	static ADXRS450_Gyro gyro;
 	
 	public static void Initialize () {
-<<<<<<< HEAD
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
-=======
-		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0); //UPDATE
->>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		gyro.calibrate();
 	}
 	
@@ -28,4 +24,8 @@ public class Gyro {
 	public static void Reset () {
 		gyro.reset();
 	}
+	public static double GetRate(){
+		return gyro.getRate();
+	}
+
 }
