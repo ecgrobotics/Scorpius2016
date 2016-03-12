@@ -3,9 +3,13 @@ package org.usfirst.frc.team1533.scorpius;
 import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+<<<<<<< HEAD
 /*		
 		
 		*/
+=======
+
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 //Implemented from AbsoluteEncoder, credit to Duncan
 public class ActuatorEncoder extends AnalogInput  {
 		
@@ -16,6 +20,11 @@ public class ActuatorEncoder extends AnalogInput  {
 	final static double pivotLength = 7.0; //UPDATE //inches?
 	final static double maxExtensionLength = 12.0; //UPDATE //inches?
 	final static double slantBaseOffset = 0.8; //UPDATE //inches?
+<<<<<<< HEAD
+=======
+	final static double angleVoltage = 3;
+	private boolean moveActuator = false;
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 	
 	public ActuatorEncoder(int channel) {
 		super(channel);
@@ -33,7 +42,26 @@ public class ActuatorEncoder extends AnalogInput  {
 		//Return the angle in degrees
 		return Math.toDegrees(angle); 
 	}
+<<<<<<< HEAD
 
+=======
+	public void Update(){
+		if(Sensory.GetPOV(0, 1) == 90) moveActuator =! moveActuator;
+		if(moveActuator == true){
+			if(getAverageVoltage() < angleVoltage){
+				Actuator.current = Extensions.Lerp (Actuator.current, 1, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
+		        Actuator.actuator.set(Actuator.current);
+			} else if(getAverageVoltage () > angleVoltage){
+				Actuator.current = Extensions.Lerp (Actuator.current, -1, ConstantFactory.Actuator.HARDNESS_CONSTANT * 0.033);
+		        Actuator.actuator.set(Actuator.current);
+			} else{
+				moveActuator = false;
+				Actuator.target = 0;
+			}
+		}
+		
+	}
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 	@Override
 	public double pidGet () {
 		return getAngle();

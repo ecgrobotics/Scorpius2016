@@ -6,8 +6,13 @@ import edu.wpi.first.wpilibj.Joystick;
 public class Sensory {
 	
 	//Private State vars
+<<<<<<< HEAD
 	public static Joystick pad0;
 	public static Joystick pad1;
+=======
+	private static Joystick pad0;
+	private static Joystick pad1;
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 	
 	//Public vars
 	static boolean isHybridEnabled;
@@ -64,10 +69,17 @@ public class Sensory {
 		//return (gamepad==0 ? pad0 : pad1).getRawButton(button.GetMappingID()); //I need the abstraction for autonomous override :/
 	}
 	
+<<<<<<< HEAD
 //	public static int GetPOV (int index, int gamepad) {
 //		return povs[gamepad][index >= povs[gamepad].length ? povs[gamepad].length - 1 : index]; //Automatically clamp value so we don't get OutOfBoundsException
 //	}
 //	
+=======
+	public static int GetPOV (int index, int gamepad) {
+		return povs[gamepad][index >= povs[gamepad].length ? povs[gamepad].length - 1 : index]; //Automatically clamp value so we don't get OutOfBoundsException
+	}
+	
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 	public static boolean tankOverride() { //INCOMPLETE //Autonomous override
 		return GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0);
 	}

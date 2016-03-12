@@ -65,7 +65,11 @@ public class Swerve {
 	 * @param heading offset in heading in radians (used for field oriented control)
 	 */
 	//INCOMPLETE //UPDATE
+<<<<<<< HEAD
 	static void Drive (double translationX, double translationY, double rotation, boolean fieldOriented) {
+=======
+	private static void Drive (double translationX, double translationY, double rotation, boolean fieldOriented) {
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		//Calculate a heading-compensation vector
 		Vector2 correctOrientation = CorrectOrientationVector(translationX, translationY);
 		//Check that we can apply heading compensation and apply
@@ -152,12 +156,21 @@ public class Swerve {
 			Panzer.lockWheels();
 		}
 		else{
+<<<<<<< HEAD
 			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1)*.75;
 			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1)* .75;
 			double rotation = Sensory.GetAxis(2, 0) *.75 * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
 			if (!fieldOrientation) {
 				if ((transX != 0 || transY != 0) && rotation == 0) {
 					rotation = Gyro.GetAngle() * -.05;
+=======
+			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1);
+			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1);
+			double rotation = Sensory.GetAxis(2, 0) * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
+			if (!fieldOrientation) {
+				if ((transX != 0 || transY != 0) && rotation == 0) {
+//					rotation = Gyro.GetAngle() * -.07;
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 				} else {
 					Gyro.Reset();
 				}

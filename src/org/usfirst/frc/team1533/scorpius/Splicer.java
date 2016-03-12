@@ -6,8 +6,11 @@ package org.usfirst.frc.team1533.scorpius;
 public class Splicer {
 		
 	public static void Initialize (boolean autonomous) {
+<<<<<<< HEAD
 		//Initialize the camera
 		Lucid.Initialize();
+=======
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		//Initialize Gyro
 		Gyro.Initialize();
 		//Initialize Sensory
@@ -24,8 +27,11 @@ public class Splicer {
 	
 	//Implicitly dynamic timestep
 	public static void Update (boolean autonomous) {
+<<<<<<< HEAD
 		//Update the camera
 		Lucid.Update();
+=======
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 		//Update Gyro
 		Gyro.Update();
 		//Update Sensory
@@ -38,6 +44,9 @@ public class Splicer {
 		Panzer.Update();
 		Swerve.Update();
 		Stinger.Update();
+<<<<<<< HEAD
 		
+=======
+>>>>>>> d127598d3fbb5fbe3e0a34f63b8fc068df6d4ed8
 	}
 }
