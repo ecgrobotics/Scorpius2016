@@ -10,7 +10,7 @@ public class Sensory {
 	public static Joystick pad1;
 	
 	//Public vars
-	static boolean isHybridEnabled;
+	static boolean isHybridEnabled, swerveTank = false;
 	
 	//Public //Allow Autonomous override
 	public static double[][] axes = new double[2][];
@@ -69,7 +69,9 @@ public class Sensory {
 //	}
 //	
 	public static boolean tankOverride() { //INCOMPLETE //Autonomous override
-		return GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0);
+		if(GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0))	swerveTank = true;
+		else if(!GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0)) swerveTank = false;
+		return swerveTank;
 	}
 
 }

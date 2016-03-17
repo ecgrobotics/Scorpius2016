@@ -59,7 +59,7 @@ public class SwerveModule {
     	driveController.set(Math.max(-1, Math.min(1, speed))); //coerce speed between -1 and 1
     }
     public void manualRotation(double power){
-    	steerPID.setSetpoint(power);
+    	steerPID.setSetpoint(Math.max(-1, Math.min(1, power)));
     }
     public void set(double speed){
     	driveController.set(Math.max(-1, Math.min(1, speed))); 

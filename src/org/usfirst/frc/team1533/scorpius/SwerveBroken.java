@@ -16,7 +16,6 @@ public class SwerveBroken {
 			RotateWheel();
 			Drive();
 		}
-
 	}
 	public static void PositionTank(){
 		for(int i = 0; i < 4; i++){
@@ -42,6 +41,7 @@ public class SwerveBroken {
 		for(int i = 1; i < 4; i+=2){
 			Swerve.modules[i].set(Sensory.GetAxis(1, 1));
 		}
+		Panzer.Update();
 	}
 
 
