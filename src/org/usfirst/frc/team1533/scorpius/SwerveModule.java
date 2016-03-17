@@ -58,6 +58,13 @@ public class SwerveModule {
     	steerPID.setSetpoint(angle);
     	driveController.set(Math.max(-1, Math.min(1, speed))); //coerce speed between -1 and 1
     }
+    public void manualRotation(double power){
+    	steerPID.setSetpoint(power);
+    }
+    public void set(double speed){
+    	driveController.set(Math.max(-1, Math.min(1, speed))); 
+    }
+
     
     private double wrapAngle(double angle) {
     	angle %= 2*Math.PI;

@@ -4,7 +4,7 @@ package org.usfirst.frc.team1533.scorpius;
 //callbacks and Scorpius. It manages what gets called
 //when.
 public class Splicer {
-		
+
 	public static void Initialize (boolean autonomous) {
 		//Initialize the camera
 		Lucid.Initialize();
@@ -14,14 +14,16 @@ public class Splicer {
 		Sensory.Initialize();
 		//Initialize Autonomous
 		if (autonomous) Autonomous.Initialize();
-		//Call all initializers
-		Actuator.Initialize();
-		Climb.Initialize();
-		Panzer.Initialize();
-		Swerve.Initialize();
-		Stinger.Initialize();
+		else{
+			//Call all initializers
+			Actuator.Initialize();
+			Climb.Initialize();
+			Panzer.Initialize();
+			Swerve.Initialize();
+			Stinger.Initialize();
+		}
 	}
-	
+
 	//Implicitly dynamic timestep
 	public static void Update (boolean autonomous) {
 		//Update the camera
@@ -33,11 +35,17 @@ public class Splicer {
 		//Update Autonomous
 		if (autonomous) Autonomous.Update();
 		//Call all updates
-		Actuator.Update();
-		Climb.Update();
-		Panzer.Update();
-		Swerve.Update();
-		Stinger.Update();
-		
+		else{
+			Actuator.Update();
+			Climb.Update();
+			if(SwerveBroken.encoderBroken){
+				SwerveBroken.Update();
+			}else{
+				Panzer.Update();
+				Swerve.Update();
+			}
+			Stinger.Update();
+		}
+
 	}
 }

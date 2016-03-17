@@ -13,6 +13,7 @@ public class Swerve {
 	static boolean flipMotors;
 	
 	public static void Initialize () {
+		SmartDashboard.putData("Swerve Broken", new SwerveBroken());
 		//initialize array of modules
 		//Array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
