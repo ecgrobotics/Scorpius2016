@@ -6,50 +6,50 @@ import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Swerve {
-	
+
 	//State vars
 	static double pivotX, pivotY;
 	static SwerveModule[] modules;
 	static boolean fieldOrientation = false;
 	static boolean flipMotors;
-	
+
 	public static void Initialize () {
-//		SmartDashboard.putData("Swerve Broken", new SwerveBroken());
+		//		SmartDashboard.putData("Swerve Broken", new SwerveBroken());
 		//initialize array of modules
 		//Array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
-			//front left
-			new SwerveModule(new Talon(ConstantFactory.RobotMap.FL_DRIVE),
-					new Talon(ConstantFactory.RobotMap.FL_STEER),
-					new AbsoluteEncoder(ConstantFactory.RobotMap.FL_ENCODER, ConstantFactory.Swerve.FL_ENC_OFFSET),
-					-ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
-					ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
-					),
-			//front right
-			new SwerveModule(new Talon(ConstantFactory.RobotMap.FR_DRIVE), 
-					new Talon(ConstantFactory.RobotMap.FR_STEER),
-					new AbsoluteEncoder(ConstantFactory.RobotMap.FR_ENCODER, ConstantFactory.Swerve.FR_ENC_OFFSET),
-					ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
-					ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
-					),
-			//back left
-			new SwerveModule(new Talon(ConstantFactory.RobotMap.BL_DRIVE),
-					new Talon(ConstantFactory.RobotMap.BL_STEER),
-					new AbsoluteEncoder(ConstantFactory.RobotMap.BL_ENCODER, ConstantFactory.Swerve.BL_ENC_OFFSET),
-					-ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
-					-ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
-					),
-			//back right
-			new SwerveModule(new Talon(ConstantFactory.RobotMap.BR_DRIVE), 
-					new Talon(ConstantFactory.RobotMap.BR_STEER),
-					new AbsoluteEncoder(ConstantFactory.RobotMap.BR_ENCODER, ConstantFactory.Swerve.BR_ENC_OFFSET),
-					ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
-					-ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
-					)
+				//front left
+				new SwerveModule(new Talon(ConstantFactory.RobotMap.FL_DRIVE),
+						new Talon(ConstantFactory.RobotMap.FL_STEER),
+						new AbsoluteEncoder(ConstantFactory.RobotMap.FL_ENCODER, ConstantFactory.Swerve.FL_ENC_OFFSET),
+						-ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
+						ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
+						),
+				//front right
+				new SwerveModule(new Talon(ConstantFactory.RobotMap.FR_DRIVE), 
+						new Talon(ConstantFactory.RobotMap.FR_STEER),
+						new AbsoluteEncoder(ConstantFactory.RobotMap.FR_ENCODER, ConstantFactory.Swerve.FR_ENC_OFFSET),
+						ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
+						ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
+						),
+				//back left
+				new SwerveModule(new Talon(ConstantFactory.RobotMap.BL_DRIVE),
+						new Talon(ConstantFactory.RobotMap.BL_STEER),
+						new AbsoluteEncoder(ConstantFactory.RobotMap.BL_ENCODER, ConstantFactory.Swerve.BL_ENC_OFFSET),
+						-ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
+						-ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
+						),
+				//back right
+				new SwerveModule(new Talon(ConstantFactory.RobotMap.BR_DRIVE), 
+						new Talon(ConstantFactory.RobotMap.BR_STEER),
+						new AbsoluteEncoder(ConstantFactory.RobotMap.BR_ENCODER, ConstantFactory.Swerve.BR_ENC_OFFSET),
+						ConstantFactory.Swerve.WHEEL_BASE_WIDTH/2,
+						-ConstantFactory.Swerve.WHEEL_BASE_LENGTH/2
+						)
 		};
 		enable();
 	}
-	
+
 	/**
 	 * @param pivoX x coordinate in inches of pivot point relative to center of robot
 	 * @param pivtY y coordinate in inches of pivot point relative to center of robot
@@ -58,7 +58,7 @@ public class Swerve {
 		pivotX = pivtX;
 		pivotY = pivtY;
 	}
-	
+
 	/**
 	 * Drive with field oriented capability
 	 * @param translationX relative speed in left/right direction (-1 to 1)
@@ -77,7 +77,7 @@ public class Swerve {
 		Vector2[] vects = new Vector2[modules.length];
 		Vector2 transVect = new Vector2(translationX, translationY),
 				pivotVect = new Vector2(pivotX, pivotY);
-		
+
 		//if there is only one module ignore rotation
 		if (modules.length < 2)
 			for (SwerveModule module : modules) 
@@ -89,8 +89,8 @@ public class Swerve {
 			vects[i].Subtract(pivotVect); //calculate module's position relative to pivot point
 			maxDist = Math.max(maxDist, vects[i].GetMagnitude()); //find farthest distance from pivot
 		}
-	
-		
+
+
 		double maxPower = 1;
 		for (int i = 0; i < modules.length; i++) {
 			//rotation motion created by driving each module perpendicular to
@@ -104,7 +104,7 @@ public class Swerve {
 			//if any exceed 100%, all must be scale down
 			maxPower = Math.max(maxPower, vects[i].GetMagnitude());
 		}
-		
+
 		double power;
 		for (int i = 0; i < modules.length; i++) {
 			power = vects[i].GetMagnitude() / maxPower; //scale down by the largest power that exceeds 100%
@@ -125,15 +125,15 @@ public class Swerve {
 		double angle = (-Gyro.GetAngle()) * Math.PI / 180;
 		return new Vector2 (x*Math.cos(angle) - y*Math.sin(angle), x*Math.sin(angle) + y*Math.cos(angle));
 	}
-	
+
 	public static void enable() {
 		for (SwerveModule module : modules) module.enable();
 	}
-	
+
 	public static void disable() {
 		for (SwerveModule module : modules) module.disable();
 	}
-	
+
 	static boolean lastFlip = false;
 	public static void Update () {
 		//Check for gyro reset button
@@ -159,7 +159,7 @@ public class Swerve {
 			double rotation = Sensory.GetAxis(2, 0) *.75 * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
 			if (!fieldOrientation) {
 				if ((transX != 0 || transY != 0) && rotation == 0) {
-//					rotation = Gyro.GetAngle() * -.05;
+					//					rotation = Gyro.GetAngle() * -.05;
 				} else {
 					Gyro.Reset();
 				}
