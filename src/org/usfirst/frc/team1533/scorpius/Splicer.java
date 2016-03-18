@@ -7,7 +7,6 @@ public class Splicer {
 
 	public static void Initialize (boolean autonomous) {
 		//Initialize the camera
-		Lucid.Initialize();
 		//Initialize Gyro
 		Gyro.Initialize();
 		//Initialize Sensory
@@ -26,8 +25,6 @@ public class Splicer {
 
 	//Implicitly dynamic timestep
 	public static void Update (boolean autonomous) {
-		//Update the camera
-		Lucid.Update();
 		//Update Gyro
 		Gyro.Update();
 		//Update Sensory

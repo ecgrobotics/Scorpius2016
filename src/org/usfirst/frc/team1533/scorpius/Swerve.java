@@ -1,5 +1,6 @@
 package org.usfirst.frc.team1533.scorpius;
 
+import edu.wpi.first.wpilibj.Sendable;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
@@ -13,7 +14,7 @@ public class Swerve {
 	static boolean flipMotors;
 	
 	public static void Initialize () {
-		SmartDashboard.putData("Swerve Broken", new SwerveBroken());
+//		SmartDashboard.putData("Swerve Broken", new SwerveBroken());
 		//initialize array of modules
 		//Array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
