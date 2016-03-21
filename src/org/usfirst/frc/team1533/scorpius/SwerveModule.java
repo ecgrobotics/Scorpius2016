@@ -30,7 +30,6 @@ public class SwerveModule {
     	steerPID.setOutputRange(-ConstantFactory.Swerve.SWERVE_STEER_CAP, ConstantFactory.Swerve.SWERVE_STEER_CAP);
     	steerPID.setContinuous();
     	steerPID.setSetpoint(Math.PI/2);
-    	steerPID.disable();
     }
     
     public void enable() {
@@ -42,7 +41,7 @@ public class SwerveModule {
     	driveController.set(0);
     	steerController.set(0);
     }
-    
+    double angle;
     /**
      * @param angle in radians
      * @param speed motor speed [-1 to 1]
@@ -55,6 +54,7 @@ public class SwerveModule {
     		angle = wrapAngle(angle + Math.PI);
     		speed *= -1;
     	}
+    	this.angle = angle;
     	steerPID.setSetpoint(angle);
     	driveController.set(Math.max(-1, Math.min(1, speed))); //coerce speed between -1 and 1
     }

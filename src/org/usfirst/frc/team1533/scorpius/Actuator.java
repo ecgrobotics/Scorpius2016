@@ -13,7 +13,7 @@ public class Actuator {
 	
 	//State vars
 	static SpeedController actuator;
-	private static ActuatorEncoder encoder; //UPDATE //Might be different interface
+	static ActuatorEncoder encoder; //UPDATE //Might be different interface
 	private int kp, kd, ki;
 	static PIDOutput output;
 	static PIDSource source;
@@ -24,7 +24,7 @@ public class Actuator {
 	static double current = 0;
 	static double target = 0;
 	
-	final static double angleVoltage = 4.3, bottomVoltage = .5, initVoltage = 3.1;
+	final static double angleVoltage = 3.65, bottomVoltage = 1.5, initVoltage = 3.1;
 	
 	public static void Initialize () {
 		actuator = new Spark(ConstantFactory.RobotMap.ACTUATOR);
@@ -35,11 +35,8 @@ public class Actuator {
 		else if((encoder.getAverageVoltage() -.05)<= initVoltage) target = 1;
 		else target = 0;
 	}
-	public static void downPosition(){
-		if ((encoder.getAverageVoltage()-.05) <= bottomVoltage) target = 1;
-		else if((encoder.getAverageVoltage() +.05)>= bottomVoltage) target = -1;
-		else target = 0;
-	}
+
+
 	public static void shootPosition(){
 		if ((encoder.getAverageVoltage()-.05) <= angleVoltage) target = 1;
 		else if((encoder.getAverageVoltage() +.05)>= angleVoltage) target = -1;
@@ -66,17 +63,8 @@ public class Actuator {
 		if(linearControl){
 		if(Sensory.pad1.getPOV(0) == 0) target = 1;
 		else if(Sensory.pad1.getPOV(0)  == 180) target = -1;
-		else if(Sensory.pad1.getPOV(0)  == 90) {
-				if ((encoder.getAverageVoltage()+.2) >= angleVoltage) target = -1;
-				else if((encoder.getAverageVoltage() -.2)<= angleVoltage) target = 1;
-				else target = 0;
-					}
-		else if(Sensory.pad1.getPOV(0)==270) {
-			
-				if ((encoder.getAverageVoltage()-.2) <= bottomVoltage) target = 1;
-				else if((encoder.getAverageVoltage() +.2)>= bottomVoltage) target = -1;
-				else target = 0;
-					}
+		else if(Sensory.pad1.getPOV(0)  == 90) target = Math.max(-1, Math.min((angleVoltage-encoder.getAverageVoltage())*1, 1));
+		else if(Sensory.pad1.getPOV(0)==270) target = Math.max(-1, Math.min((bottomVoltage-encoder.getAverageVoltage())*1, 1));
 		else target = 0;
 		}
 		else if(linearControl == false){

@@ -115,11 +115,7 @@ public class Swerve {
 			}
 		}
 	}
-	public static void lockWheels(){
-		for(int i = 0; i <modules.length; i++){
-			modules[i].set(90, 0);
-		}
-	}
+
 	//Graciously plaigarized from Duncan's code :D
 	private static Vector2 CorrectOrientationVector (double x, double y) {
 		double angle = (-Gyro.GetAngle()) * Math.PI / 180;
@@ -133,9 +129,19 @@ public class Swerve {
 	public static void disable() {
 		for (SwerveModule module : modules) module.disable();
 	}
+	public static void tank(){
+		for(int i = 0; i < 4; i+=2){
+			Swerve.modules[i].set(Sensory.GetAxis(2, 0));
+		}
+		for(int i = 1; i < 4; i+=2){
+			Swerve.modules[i].set(Sensory.GetAxis(1, 0));
+		}
+	}
 
 	static boolean lastFlip = false;
 	public static void Update () {
+//		SmartDashboard.putData("Swerve Broken?", new SwerveBroken());
+		
 		//Check for gyro reset button
 		//if (Sensory.GetButtonDown(ButtonMapping.LEFT_BUMPER, 0)) Gyro.Reset();
 		//Check for field orientation toggle
@@ -154,17 +160,17 @@ public class Swerve {
 			Panzer.lockWheels();
 		}
 		else{
-			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1)*.75;
-			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1)* .75;
-			double rotation = Sensory.GetAxis(2, 0) *.75 * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
-			if (!fieldOrientation) {
-				if ((transX != 0 || transY != 0) && rotation == 0) {
-					//					rotation = Gyro.GetAngle() * -.05;
-				} else {
-					Gyro.Reset();
-				}
-			}
-			Drive(transX, transY, rotation, fieldOrientation);
+//			double transX = Sensory.GetButtonDown(ButtonMapping.LEFT_TRIGGER, 0) ? 0 : Sensory.GetAxis(0, 0) * (flipMotors ? -1 : 1)*.75;
+//			double transY = -Sensory.GetAxis(1, 0) * (flipMotors ? -1 : 1)* .75;
+//			double rotation = Sensory.GetAxis(2, 0) *.75 * (slowTurn ? ConstantFactory.Swerve.SLOW_TURN_PERCENT_MAX : 1);
+//			if (!fieldOrientation) {
+//				if ((transX != 0 || transY != 0) && rotation == 0) {
+//				} else {
+//					Gyro.Reset();
+//				}
+//			}
+//			Drive(transX, transY, rotation, fieldOrientation);
+//		tank();
 		}
 		//DEBUG
 		SmartDashboard.putBoolean("Field Orientation", fieldOrientation);

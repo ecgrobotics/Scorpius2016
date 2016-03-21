@@ -8,6 +8,7 @@ public class Gyro {
 	
 	static ADXRS450_Gyro gyro;
 	
+	
 	public static void Initialize () {
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		gyro.calibrate();
@@ -18,7 +19,7 @@ public class Gyro {
 	}
 	
 	public static double GetAngle() {
-		return gyro.getAngle() % 360.0;
+		return gyro.getAngle();
 	}
 	
 	public static void Reset () {

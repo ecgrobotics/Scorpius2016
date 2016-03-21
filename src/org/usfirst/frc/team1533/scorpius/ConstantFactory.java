@@ -10,10 +10,10 @@ public class ConstantFactory {
 		public final static double SWERVE_STEER_CAP = 1; //speed limit on the steering motor
 
 		//swerve module encoder offsets (degrees)
-		public final static double FL_ENC_OFFSET = 59+14+180+26-3;
-		public final static double FR_ENC_OFFSET = 103-13;
-		public final static double BL_ENC_OFFSET = 98-85+90+6;
-		public final static double BR_ENC_OFFSET = 135+13+91+3;
+		public final static double FL_ENC_OFFSET = 59+14+180+26-3+80-3;
+		public final static double FR_ENC_OFFSET = 103-13+70-10+180-25;
+		public final static double BL_ENC_OFFSET = 98-85+90+6-15-5-5-2+135;
+		public final static double BR_ENC_OFFSET = 135+13+91+3+80+180-10;
 
 		//wheel base dimensions measures where the wheels touch the ground
 		public final static double WHEEL_BASE_WIDTH = 23;
@@ -79,6 +79,6 @@ public class ConstantFactory {
 		public final static int ROLLER = 13;
 
 		public final static int CLIMB_L = 1;
-		public final static int CLIMB_R = 0;
+		public final static int CLIMB_R = 0; 
 	}
 }

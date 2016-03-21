@@ -8,34 +8,41 @@ import edu.wpi.first.wpilibj.Timer;
 public class Autonomous {
 
 	static Timer timer;
-	static boolean timerSet, part1 = true, part2 = false, part3 = false, part4 = false;
-	static double gyroAngle, maxRate = 3, maxOffset = 15, offset, startTime, runTime = 4000, accel = 1;
-	private static ActuatorEncoder encoder;
+	static boolean timerSet, part1 = true, part2 = false, part3 = false, part4 = false, gyro = true;
+	static double gyroAngle, maxRate = 3, maxOffset = 10, offset, startTime1, startTime2, runTime = 15000, accel = 1;
 	private static Accelerometer accelerometer;
+	static int number;
+	static double rotation;
 	
 
 	public static void Initialize () {
-		gyroAngle = Gyro.GetAngle() * 360;
-		timer = new Timer();
-	}
+		Gyro.gyro.reset();
+		part1 = true;
+		part2 = true;
+		part3 = false;
+		part4 = false;
+		gyro = true;
+		gyroAngle = Gyro.GetAngle();
+		startTime1 = System.currentTimeMillis();
+		}
 
 	public static void Update () {
 		//Perform AI Logic here
 		if(part1){
 			lowerArm();
-			if(encoder.getAverageVoltage() < Actuator.bottomVoltage + .3 && encoder.getAverageVoltage() > Actuator.bottomVoltage - .3){
+			if(Actuator.encoder.getAverageVoltage() < Actuator.bottomVoltage + .3 && Actuator.encoder.getAverageVoltage() > Actuator.bottomVoltage - .3){
 				part1 = false;
-				part2 = true;
-				startTime = System.currentTimeMillis();
+				Actuator.actuator.set(0);
 			}
 		}if(part2){
 			correctObstacles();
-			if(accelerometer.getX() > accel || System.currentTimeMillis() >= startTime + runTime){
+			if(System.currentTimeMillis() >= startTime1 + runTime){
 			part2 = false;
+			part1 = false;
 			part3 = true;
 			}
 		}if(part3){
-			shoot();
+			swankDrive(0,0,0);
 			part3 = false;
 		}
 		//Update values
@@ -44,16 +51,20 @@ public class Autonomous {
 
 	//Utility methods
 	static void swankDrive(double x, double y, double z){
-		Swerve.Drive(x, y, z, false);
-		Panzer.Drive(-x, -y);
+		rotation = Gyro.GetAngle() * -.025;
+		
+//		Swerve.Drive(x, y, (y==0) ? 0 : rotation, false);
+		Panzer.Drive((y == 0)? 0 : -1, x);
 
 	}
 	static void lowerArm(){
-		Actuator.downPosition();
+		double target = Math.max(-1, Math.min((Actuator.bottomVoltage-Actuator.encoder.getAverageVoltage())*1, 1));	
+		Actuator.actuator.set(target);
 	}
+
 	static void correctObstacles(){
-		if(gyroAngle < gyroAngle + maxOffset && gyroAngle > gyroAngle - maxOffset){
-			swankDrive(0, .75, 0);
+		if((gyroAngle < (Gyro.GetAngle() + maxOffset) && gyroAngle > (Gyro.GetAngle() - maxOffset)) && (System.currentTimeMillis() < startTime1 + runTime)){
+			swankDrive(0, -.5, 0);
 		}
 		else swankDrive(0,0,0);
 //		if(gyroAngle > gyroAngle + maxOffset){
