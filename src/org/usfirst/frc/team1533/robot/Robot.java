@@ -5,17 +5,19 @@ import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Timer;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+import org.usfirst.frc.team1533.robot.subsystems.*;
 
-/**
- * The VM is configured to automatically run this class, and to call the
- * functions corresponding to each mode, as described in the IterativeRobot
- * documentation. If you change the name of this class or the package after
- * creating this project, you must also update the manifest file in the resource
- * directory.
- */
 public class Robot extends IterativeRobot {
+	Swerve swerve;
+	Actuator actuator;
+	Tank tank;
+
     final String defaultAuto = "Default";
-    final String customAuto = "My Auto";
+    final String lowbar = "lowBar";
+    final String rockwall = "rockwall";
+    final String ramparts = "ramparts";
+    final String moat = "moat";  
+
     String autoSelected;
     SendableChooser chooser;
 	
@@ -24,10 +26,18 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
+    	swerve = new Swerve();
+    	actuator = new Actuator();
+    	tank = new Tank();
+    	
+    	
         chooser = new SendableChooser();
         chooser.addDefault("Default Auto", defaultAuto);
-        chooser.addObject("My Auto", customAuto);
-        SmartDashboard.putData("Auto choices", chooser);
+        chooser.addObject("Low Bar", lowbar);
+        chooser.addObject("Rock Wall", rockwall);
+        chooser.addObject("Ramparts", ramparts);
+        chooser.addObject("Moat", moat);
+        SmartDashboard.putData("Autonomous:", chooser);
     }
     
 	/**
@@ -50,12 +60,18 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
     	switch(autoSelected) {
-    	case customAuto:
-        //Put custom auto code here   
-            break;
+    	case lowbar:
+    		
+    		break;
+    	case rockwall:
+    		break;
+    	case ramparts:
+    		break;
+    	case moat:
+    		break;
     	case defaultAuto:
     	default:
-    	//Put default auto code here
+    	//no default auto
             break;
     	}
     }
