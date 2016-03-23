@@ -2,7 +2,7 @@
 package org.usfirst.frc.team1533.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
-import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1533.robot.subsystems.*;
@@ -11,6 +11,8 @@ public class Robot extends IterativeRobot {
 	Swerve swerve;
 	Actuator actuator;
 	Tank tank;
+	Stinger stinger;
+	Joystick joy1, joy2;
 
     final String defaultAuto = "Default";
     final String lowbar = "lowBar";
@@ -26,9 +28,12 @@ public class Robot extends IterativeRobot {
      * used for any initialization code.
      */
     public void robotInit() {
+    	joy1 = new Joystick(0);
+    	joy2 = new Joystick(1);
     	swerve = new Swerve();
-    	actuator = new Actuator();
-    	tank = new Tank();
+    	actuator = new Actuator(joy2);
+    	tank = new Tank(joy1);
+    	stinger = new Stinger(joy1, joy2);
     	
     	
         chooser = new SendableChooser();
@@ -80,12 +85,13 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
-        
+        actuator.move();
+        tank.move();
+        swerve.driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
+        stinger.climb();
     }
     
-    /**
-     * This function is called periodically during test mode
-     */
+
     public void testPeriodic() {
     
     }
