@@ -35,11 +35,16 @@ public class Actuator {
 		else if(joy.getPOV() == 270) moveTo(ConstantFactory.Steering.hangVoltage);
 		else smooth(0);
 		
+		
+		if(joy.getRawButton(ConstantFactory.RIGHT_BUMPER)) actuator.set(1);
+		else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER)) actuator.set(-1);
+		else smooth(0);
+		
 	}
 
 	public void smooth(double target){
 		double k = 1;
-		double c = -.99*target;
+		double c = -1+(target*.01);
 		if(target != 0) speed = ((2*target)/(1 + Math.pow(10, (-k * speed)))) + c;
 		else if(target == 0){
 			target = speed > 0 ? 1 : speed < 0 ? -1 : 0;
@@ -51,5 +56,13 @@ public class Actuator {
 	public void moveTo(double voltage){
 		pid.enable();
 		pid.setSetpoint(voltage);
+	}
+	
+	public double getAverageVoltage(){
+		double voltage = encoder.getAverageVoltage();
+		return voltage;
+	}
+	public void set(double speed){
+		actuator.set(speed);
 	}
 }

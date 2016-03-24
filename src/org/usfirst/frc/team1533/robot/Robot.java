@@ -3,6 +3,7 @@ package org.usfirst.frc.team1533.robot;
 
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1533.robot.subsystems.*;
@@ -13,6 +14,7 @@ public class Robot extends IterativeRobot {
 	Tank tank;
 	Stinger stinger;
 	Joystick joy1, joy2;
+	Gyro gyro;
 
     final String defaultAuto = "Default";
     final String lowbar = "lowBar";
@@ -22,6 +24,9 @@ public class Robot extends IterativeRobot {
 
     String autoSelected;
     SendableChooser chooser;
+    
+    double bottomVoltage, startTime, runTime;
+    boolean part1, part2, part3;
 	
     /**
      * This function is run when the robot is first started up and should be
@@ -33,7 +38,8 @@ public class Robot extends IterativeRobot {
     	swerve = new Swerve();
     	actuator = new Actuator(joy2);
     	tank = new Tank(joy1);
-    	stinger = new Stinger(joy1, joy2);
+    	stinger = new Stinger(joy2);
+    	gyro = new Gyro();
     	
     	
         chooser = new SendableChooser();
@@ -41,7 +47,7 @@ public class Robot extends IterativeRobot {
         chooser.addObject("Low Bar", lowbar);
         chooser.addObject("Rock Wall", rockwall);
         chooser.addObject("Ramparts", ramparts);
-        chooser.addObject("Moat", moat);
+        chooser.addObject("Moat", ramparts);
         SmartDashboard.putData("Autonomous:", chooser);
     }
     
@@ -55,6 +61,12 @@ public class Robot extends IterativeRobot {
 	 * If using the SendableChooser make sure to add them to the chooser code above as well.
 	 */
     public void autonomousInit() {
+//		Gyro.gyro.reset();
+		part1 = true;
+		part2 = true;
+		part3 = false;
+		startTime = System.currentTimeMillis();
+		runTime = 10000;
     	autoSelected = (String) chooser.getSelected();
 //		autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
@@ -65,20 +77,37 @@ public class Robot extends IterativeRobot {
      */
     public void autonomousPeriodic() {
     	switch(autoSelected) {
-    	case lowbar:
-    		
+    	case lowbar: ConstantFactory.Steering.bottomVoltage = .2;
     		break;
-    	case rockwall:
+    	case rockwall: ConstantFactory.Steering.bottomVoltage = 1.5;
     		break;
-    	case ramparts:
-    		break;
-    	case moat:
+    	case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.2;
     		break;
     	case defaultAuto:
     	default:
     	//no default auto
             break;
     	}
+        Scheduler.getInstance().run();
+    	if(part1){
+			actuator.moveTo(bottomVoltage);
+			if(actuator.getAverageVoltage() < bottomVoltage + .1 && actuator.getAverageVoltage() > bottomVoltage - .1){
+				part1 = false;
+				actuator.set(0);
+			}
+		}if(part2){
+			double z = gyro.getAngle() * -.025;
+			swerve.autonomous(0, -.5, z);
+			tank.autonomous(1, 0);
+			if(System.currentTimeMillis() >= startTime + runTime){
+			part2 = false;
+			part1 = false;
+			part3 = true;
+			}
+		}if(part3){
+			
+			part3 = false;
+		}
     }
 
     /**
@@ -89,6 +118,7 @@ public class Robot extends IterativeRobot {
         tank.move();
         swerve.driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
         stinger.climb();
+        stinger.shoot();
     }
     
 

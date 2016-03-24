@@ -62,9 +62,10 @@ public class ConstantFactory {
 		public final static double HARDNESS_CONSTANT = 9.0;
 		
 		//Actuator
-		public final static double angleVoltage = 3.65;
-		public final static double initVoltage = 3.1;
-		public final static double hangVoltage = 3.8;
+		public static double angleVoltage = 3.65;
+		public static double initVoltage = 3.1;
+		public static double hangVoltage = 3.8;
+		public static double bottomVoltage = 1.2;
 		
 		//Stinger
 		public final static double SHOOTER_DELAY = 0.5;

@@ -126,6 +126,9 @@ public class Swerve extends Subsystem {
 	public void disable() {
 		for (SwerveModule module : modules) module.disable();
 	}
+	public void autonomous(double x, double y, double z){
+		driveNormal(x, y, z);
+	}
 
     public void initDefaultCommand() {
         // Set the default command for a subsystem here.
