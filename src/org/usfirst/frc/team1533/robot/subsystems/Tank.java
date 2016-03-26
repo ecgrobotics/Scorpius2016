@@ -33,11 +33,16 @@ public class Tank {
 			if(targetY != 0) speedY = ((2)/(1 + Math.pow(10, (-k * speedY)))) + cY;
 			else if(targetY == 0) speedY = 0;
 		
-		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER)){
-			if(targetX != 0) speedX = ((2)/(1 + Math.pow(10, (-1 * speedX)))) + cX;
-			else if(targetX == 0) speedX = 0;
-			
+		}else if(joy.getPOV() == 0){
+			speedY = ((2)/(1+Math.pow(10, -k * speedY))) - .99;
+			speedX = 0;
+		}else if(joy.getPOV() == 180){
+			speedY = ((2)/(1+Math.pow(10, -k * speedY))) - 1.01;
+			speedX = 0;
+		}
+			else {
 			speedY = 0;
+			speedX = 0;
 		}
 		
 		drive.arcadeDrive(Math.max(-1,Math.min(speedY,1)), Math.max(-1,Math.min(speedX,1)), false);

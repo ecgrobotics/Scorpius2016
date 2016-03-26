@@ -35,7 +35,7 @@ public class Robot extends IterativeRobot {
     public void robotInit() {
     	joy1 = new Joystick(0);
     	joy2 = new Joystick(1);
-    	swerve = new Swerve();
+    	swerve = new Swerve(joy1);
     	actuator = new Actuator(joy2);
     	tank = new Tank(joy1);
     	stinger = new Stinger(joy2);
@@ -116,7 +116,7 @@ public class Robot extends IterativeRobot {
     public void teleopPeriodic() {
         actuator.move();
         tank.move();
-        swerve.driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
+        swerve.move((gyro.getAngle() * -.025));
         stinger.climb();
         stinger.shoot();
     }
