@@ -71,6 +71,9 @@ public class SwerveModule {
     public void rest() {
     	driveController.set(0);
     }
+    public double getAngle(){
+    	return steerEncoder.getAngle();
+    }
     
     private double wrapAngle(double angle) {
     	angle %= 2*Math.PI;

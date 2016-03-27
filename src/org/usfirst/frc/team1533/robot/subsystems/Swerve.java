@@ -2,8 +2,11 @@ package org.usfirst.frc.team1533.robot.subsystems;
 
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
+
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 /**
@@ -13,14 +16,16 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
 public class Swerve extends Subsystem {
 	double pivotX, pivotY, startTime, runTime = 10000;
 	boolean toggle;
-	SwerveModule[] modules;
+	public SwerveModule[] modules;
 	Joystick joy1;
+	SpeedController flDrive, frDrive, blDrive, brDrive, flsteer, frsteer, blsteer, brsteer;
 
 	/**
 	 * Custom constructor for current robot.
 	 */
 	public Swerve(Joystick joy1) {
 		this.joy1 = joy1;
+
 		//initialize array of modules
 		//array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
@@ -53,6 +58,7 @@ public class Swerve extends Subsystem {
 						-ConstantFactory.WHEEL_BASE_LENGTH/2
 						)
 		};
+		enable();
 	}
 
 	/**
@@ -64,6 +70,9 @@ public class Swerve extends Subsystem {
 		this.pivotY = pivotY;
 	}
 
+	public void debugMode(){
+
+	}
 	/**
 	 * Drive with field oriented capability
 	 * @param translationX relative speed in left/right direction (-1 to 1)
@@ -110,6 +119,19 @@ public class Swerve extends Subsystem {
 			} else {
 				modules[i].rest();
 			}
+			//			if(!SmartDashboard.getBoolean("DEBUG MODE")){
+			//				SmartDashboard.putNumber(
+			//						i == 0 ? "FLAngle":
+			//							i == 1 ? "FRAngle":
+			//								i == 2 ? "BLAngle":
+			//									i == 3 ? "BRAngle" : null
+			//											, vects[i].getAngle()-Math.PI/2);
+			//				SmartDashboard.putNumber(
+			//						i == 0 ? "FLDrive":
+			//							i == 1 ? "FRDrive":
+			//								i == 2 ? "BLDrive":
+			//									i == 3 ? "BRDrive" : null, power);
+			//			}
 		}
 	}
 
@@ -133,18 +155,55 @@ public class Swerve extends Subsystem {
 	public void autonomous(double x, double y, double z){
 		driveNormal(x, y, z);
 	}
+
 	public void move(double rotationCorrect){
+		double target = 0;
+		double t = 0;
+		//		if(!SmartDashboard.getBoolean("DEBUG MODE")){
 		if(joy1.getPOV() == 0) driveNormal(0, 1, rotationCorrect);
 		else if(joy1.getPOV() == 180) driveNormal(0, -1, rotationCorrect);
 		else if(joy1.getPOV() == 90){
-			setTimer();
+			t = -1;
+			target = 1;
 		}
 		else if(joy1.getPOV() == 270){
-			setTimer();
+			t =-1;
+			target = -1;
 		}
-		else driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
+		else
+			driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
+		if(t < 0){
+			skipDefense(target, rotationCorrect);
+			setTimer();
+			t = 0;
+		}
+
+		//		}else{
+		//			if(!SmartDashboard.getBoolean("FL")){
+		//				modules[0].driveController.set(SmartDashboard.getNumber("FLDrive"));
+		//				modules[0].steerPID.setSetpoint(SmartDashboard.getNumber("FLAngle"));
+		//			}
+		//			else stop(0);
+		//			if(!SmartDashboard.getBoolean("FR")){
+		//				modules[1].driveController.set(SmartDashboard.getNumber("FRDrive"));
+		//				modules[1].steerPID.setSetpoint(SmartDashboard.getNumber("FRAngle"));
+		//			}
+		//			else stop(1);
+		//			if(!SmartDashboard.getBoolean("BR")){
+		//				modules[2].driveController.set(SmartDashboard.getNumber("BRDrive"));
+		//				modules[2].steerPID.setSetpoint(SmartDashboard.getNumber("BRAngle"));
+		//			}
+		//			else stop(2);
+		//			if(SmartDashboard.getBoolean("BL")){
+		//				modules[3].driveController.set(SmartDashboard.getNumber("BLDrive"));
+		//				modules[3].steerPID.setSetpoint(SmartDashboard.getNumber("BLAngle"));
+		//			}
+		//			else stop(3);
+		//		}
 	}
-	public void toggle(){
+	public void stop(int module){
+		modules[module].driveController.set(0);
+		modules[module].steerController.set(0);
 	}
 	public void setTimer(){
 		startTime = System.currentTimeMillis();
@@ -152,7 +211,7 @@ public class Swerve extends Subsystem {
 	public double getTimer(){
 		return (startTime + runTime) - System.currentTimeMillis();
 	}
-	
+
 
 	public void skipDefense(double direction, double rotationCorrect){
 		if(System.currentTimeMillis() <= (startTime + runTime)) driveNormal(direction, 0, rotationCorrect);

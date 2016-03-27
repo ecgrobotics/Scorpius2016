@@ -9,11 +9,19 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1533.robot.subsystems.*;
 
 public class Robot extends IterativeRobot {
+	//TODO Rumble on Joystick
+	//TODO Test Labview
+	//TODO Field Orientation
+	//TODO Vision
+	//TODO Easier encoder setting
+	//TODO Defense skipping
+	//TODO Spring cleaning on code
+	//TODO Find angle for actuator
 	Swerve swerve;
 	Actuator actuator;
 	Tank tank;
 	Stinger stinger;
-	Joystick joy1, joy2;
+	Joystick joy1, joy2, joy3;
 	Gyro gyro;
 
     final String defaultAuto = "Default";
@@ -36,8 +44,8 @@ public class Robot extends IterativeRobot {
     	joy1 = new Joystick(0);
     	joy2 = new Joystick(1);
     	swerve = new Swerve(joy1);
-    	actuator = new Actuator(joy2);
-    	tank = new Tank(joy1);
+    	actuator = new Actuator(joy1, joy2);
+    	tank = new Tank(joy1, joy2);
     	stinger = new Stinger(joy2);
     	gyro = new Gyro();
     	
@@ -68,7 +76,6 @@ public class Robot extends IterativeRobot {
 		startTime = System.currentTimeMillis();
 		runTime = 10000;
     	autoSelected = (String) chooser.getSelected();
-//		autoSelected = SmartDashboard.getString("Auto Selector", defaultAuto);
 		System.out.println("Auto selected: " + autoSelected);
     }
 
@@ -114,13 +121,24 @@ public class Robot extends IterativeRobot {
      * This function is called periodically during operator control
      */
     public void teleopPeriodic() {
+        Scheduler.getInstance().run();
         actuator.move();
         tank.move();
         swerve.move((gyro.getAngle() * -.025));
         stinger.climb();
         stinger.shoot();
+        
+    	SmartDashboard.putNumber("FL", swerve.modules[0].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("FR", swerve.modules[1].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("BL", swerve.modules[2].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("BR", swerve.modules[3].getAngle()*180/Math.PI); 
     }
-    
+    public void disabledPeriodic(){
+    	SmartDashboard.putNumber("FL", swerve.modules[0].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("FR", swerve.modules[1].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("BL", swerve.modules[2].getAngle()*180/Math.PI);
+    	SmartDashboard.putNumber("BR", swerve.modules[3].getAngle()*180/Math.PI);    	
+    }
 
     public void testPeriodic() {
     

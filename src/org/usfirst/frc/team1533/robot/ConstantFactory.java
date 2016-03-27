@@ -2,10 +2,10 @@ package org.usfirst.frc.team1533.robot;
 
 public class ConstantFactory {
 	//Swerve
-	public final static double FL_ENC_OFFSET = 353;
-	public final static double FR_ENC_OFFSET = 305;
-	public final static double BL_ENC_OFFSET = 217;
-	public final static double BR_ENC_OFFSET = 132;
+	public final static double FL_ENC_OFFSET = 353+84 - 6;
+	public final static double FR_ENC_OFFSET = 305 +52;
+	public final static double BL_ENC_OFFSET = 217+49;
+	public final static double BR_ENC_OFFSET = 132+220-7;
 	
 	public final static double WHEEL_BASE_WIDTH = 23;
 	public final static double WHEEL_BASE_LENGTH = 16.5;
@@ -64,7 +64,7 @@ public class ConstantFactory {
 		//Actuator
 		public static double angleVoltage = 3.65;
 		public static double initVoltage = 3.1;
-		public static double hangVoltage = 3.8;
+		public static double hangVoltage = .2;
 		public static double bottomVoltage = 1.2;
 		
 		//Stinger
