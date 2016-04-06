@@ -24,11 +24,10 @@ public class Actuator implements PIDOutput {
 		this.joy1 = joy1;
 		this.joy2 = joy2;
 		speed = 0;
-		pid.setPercentTolerance(.05);
 
 		
 		
-		pid.setInputRange(-.2, 5);
+		pid.setInputRange(.2, 5);
 		pid.disable();
 	}
 
@@ -41,7 +40,10 @@ public class Actuator implements PIDOutput {
 			pid.disable();
 			actuator.set(lerp(-1));
 		}
-		else if(joy2.getPOV() == 90) moveTo(ConstantFactory.Steering.angleVoltage);
+		else if(joy2.getPOV() == 90){
+			pid.disable();
+			actuator.set(4.17 - encoder.getAverageVoltage());
+		}
 		else if(joy2.getPOV() == 270) moveTo(ConstantFactory.Steering.hangVoltage);		
 		else if(joy2.getRawButton(ConstantFactory.LEFT_BUMPER)) actuator.set(1);
 		else if(joy2.getRawButton(ConstantFactory.LEFT_TRIGGER)) actuator.set(-1);
@@ -52,6 +54,9 @@ public class Actuator implements PIDOutput {
 //		dashboard();
 		SmartDashboard.putNumber("voltage", getAverageVoltage());
 	}
+	public void autonomous(double voltage){
+		actuator.set((voltage - encoder.getAverageVoltage())*2);
+	}
 	public void dashboard(){
 //		SmartDashboard.putNumber("Arm Angle", encoder.getAverageVoltage());
 //		SmartDashboard.putNumber("Voltage", encoder.getVoltage());
@@ -61,31 +66,11 @@ public class Actuator implements PIDOutput {
 		return speed;
 	}
 
-//	public void smooth(double target){
-//		if(pid.isEnabled()) pid.disable();
-//		double k = .25;
-//		double c = -1+(target*.01);
-//		if(target != 0) speed = ((2)/(1 + Math.pow(10, (-k * speed)))) + c;
-//		else if(target == 0){
-//			target = speed > 0 ? 1 : speed < 0 ? -1 : 0;
-//			speed = ((target)/(1 + Math.pow(10, (-9 * speed + 8))));
-//		}
-//		actuator.set(speed);
-//		
-////		double current = actuator.get();
-////		if(Math.abs(current) <= 0.05){
-////			if(!pid.isEnabled()){
-////				pid.enable();
-////				lastVoltage = encoder.getAverageVoltage(); 
-////			}else if(pid.isEnabled()){
-////				double currentVoltage = encoder.getAverageVoltage();
-////				if(Math.abs(currentVoltage-lastVoltage) < .05) moveTo(lastVoltage);
-////			}
-////		}
-//	}
-
+	public double getSetpoint(){
+		return pid.getSetpoint();
+	}
 	public void moveTo(double voltage){
-		pid.enable();  
+		if(!pid.isEnabled()) pid.enable();  
 		pid.setSetpoint(voltage);
 	}
 	public double getAverageVoltage(){

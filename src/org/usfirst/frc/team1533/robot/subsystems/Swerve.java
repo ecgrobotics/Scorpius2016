@@ -14,18 +14,22 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
  *
  */
 public class Swerve extends Subsystem {
-	double pivotX, pivotY, startTime, runTime = 10000;
-	boolean toggle;
+	double pivotX, pivotY, lastpressed, startangle;
+	boolean lockwheels, rotating;
 	public SwerveModule[] modules;
 	Joystick joy1;
+	Gyro gyro;
 	SpeedController flDrive, frDrive, blDrive, brDrive, flsteer, frsteer, blsteer, brsteer;
 
 	/**
 	 * Custom constructor for current robot.
 	 */
-	public Swerve(Joystick joy1) {
+	public Swerve(Joystick joy1, Gyro gyro) {
 		this.joy1 = joy1;
-
+		this.gyro = gyro;
+		lockwheels = false;	
+		rotating = false;
+		lastpressed = System.currentTimeMillis() + 1000;
 		//initialize array of modules
 		//array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
@@ -111,6 +115,7 @@ public class Swerve extends Subsystem {
 			maxPower = Math.max(maxPower, vects[i].getMagnitude());
 		}
 
+
 		double power;
 		for (int i = 0; i < modules.length; i++) {
 			power = vects[i].getMagnitude() / maxPower; //scale down by the largest power that exceeds 100%
@@ -155,28 +160,52 @@ public class Swerve extends Subsystem {
 	public void autonomous(double x, double y, double z){
 		driveNormal(x, y, z);
 	}
+	public void pivot(double degrees){
+		double currentangle = gyro.getAngle();
+		double targetangle = startangle + degrees;
+		driveNormal(0,0,(targetangle-currentangle)/180);
+		if((targetangle-currentangle)/180 < .04) rotating = false;
+	}
 
-	public void move(double rotationCorrect){
-		double target = 0;
-		double t = 0;
+	public void move(double rotationCorrect, Tank tank){
 		//		if(!SmartDashboard.getBoolean("DEBUG MODE")){
-		if(joy1.getPOV() == 0) driveNormal(0, 1, rotationCorrect);
-		else if(joy1.getPOV() == 180) driveNormal(0, -1, rotationCorrect);
-		else if(joy1.getPOV() == 90){
-			t = -1;
-			target = 1;
+		if(joy1.getPOV() == 0){
+			driveNormal(0, 1, rotationCorrect);
+			tank.autonomous(1, 0);
+
+			rotating = false;
+			lockwheels = false;
 		}
-		else if(joy1.getPOV() == 270){
-			t =-1;
-			target = -1;
+		else if(joy1.getPOV() == 180){
+			driveNormal(0, -1, rotationCorrect);
+			tank.autonomous(-1, 0);
+
+			rotating = false;
+			lockwheels = false;
+		}else if(joy1.getRawButton(ConstantFactory.RIGHT_TRIGGER)){
+			lockWheels();
+		}else if(joy1.getRawButton(ConstantFactory.RIGHT_BUMPER)){
+			fullPower();
+
+			rotating = false;
+			lockwheels = false;
+		}else if(joy1.getRawButton(ConstantFactory.LEFT_BUMPER)){
+			if(lastpressed + 1000 > System.currentTimeMillis()){
+				startangle = gyro.getAngle();
+				rotating = true;
+			}
+			lockwheels = false;
 		}
-		else
-			driveNormal(joy1.getX()/2, -joy1.getY()/2, joy1.getZ()/2);
-		if(t < 0){
-			skipDefense(target, rotationCorrect);
-			setTimer();
-			t = 0;
+		else {
+			if(Math.abs(joy1.getX())>.05 || Math.abs(joy1.getY())>.05 || Math.abs(joy1.getRawAxis(2))>.05){
+				driveNormal((joy1.getX()*55)/100, (-joy1.getY()*55)/100, (joy1.getRawAxis(2)*55)/100);
+				lockwheels = false;
+				rotating = false;
+			}
+			else if(lockwheels) lockWheels();
+			else if(rotating) pivot(180);
 		}
+
 
 		//		}else{
 		//			if(!SmartDashboard.getBoolean("FL")){
@@ -205,22 +234,20 @@ public class Swerve extends Subsystem {
 		modules[module].driveController.set(0);
 		modules[module].steerController.set(0);
 	}
-	public void setTimer(){
-		startTime = System.currentTimeMillis();
+	public void fullPower(){
+		driveNormal(joy1.getX()*9/10, joy1.getY()*9/10, joy1.getRawAxis(2)*55/100);
 	}
-	public double getTimer(){
-		return (startTime + runTime) - System.currentTimeMillis();
-	}
-
 
 	public void skipDefense(double direction, double rotationCorrect){
-		if(System.currentTimeMillis() <= (startTime + runTime)) driveNormal(direction, 0, rotationCorrect);
-		else skipDefense(direction, rotationCorrect);
+		//		if(System.currentTimeMillis() <= (startTime + runTime)) driveNormal(direction, 0, rotationCorrect);
+		//		else skipDefense(direction, rotationCorrect);
 	}
 
-	public void initDefaultCommand() {
-		// Set the default command for a subsystem here.
-		//setDefaultCommand(new MySpecialCommand());
+	public void lockWheels(){
+		modules[0].set(45, 0);
+		modules[1].set(-45, 0);
+		modules[2].set(-45, 0);
+		modules[3].set(45, 0);
 	}
 
 	/**
@@ -262,6 +289,12 @@ public class Swerve extends Subsystem {
 			x = y;
 			y = -temp;
 		}
+	}
+
+	@Override
+	protected void initDefaultCommand() {
+		// TODO Auto-generated method stub
+
 	}
 }
 

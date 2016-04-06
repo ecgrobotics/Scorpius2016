@@ -7,13 +7,12 @@ import edu.wpi.first.wpilibj.RobotDrive;
 
 public class Tank {
 	RobotDrive drive;
-	Joystick joy, joy2;
+	Joystick joy;
 	double speedX, speedY;
 
 
 	public Tank(Joystick joy1, Joystick joy2){
 		this.joy = joy1;
-		this.joy2 = joy2;
 		drive = new RobotDrive(ConstantFactory.L_TREAD, ConstantFactory.R_TREAD);
 		speedX = 0;
 		speedY = 0;
@@ -21,9 +20,10 @@ public class Tank {
 
 	public void move(){
 		if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER)){
-			speedX = -joy.getRawAxis(0);
-			speedY = joy.getRawAxis(3);
-		
+			if(Math.abs(joy.getRawAxis(1)) > .05) speedX = -joy.getRawAxis(1);
+			else speedX = 0;
+			if(Math.abs(joy.getRawAxis(2)) > .05) speedY = -joy.getRawAxis(2);
+			else speedY = 0;
 		}	else {
 			speedY = 0;
 			speedX = 0;

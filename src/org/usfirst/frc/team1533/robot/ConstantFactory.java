@@ -2,24 +2,28 @@ package org.usfirst.frc.team1533.robot;
 
 public class ConstantFactory {
 	//Swerve
-	public final static double FL_ENC_OFFSET = 353+84 - 6;
-	public final static double FR_ENC_OFFSET = 305 +52;
+	public final static double FL_ENC_OFFSET = 353+84 - 6 -180;
+	public final static double FR_ENC_OFFSET = 305 +52+180;
 	public final static double BL_ENC_OFFSET = 217+49;
-	public final static double BR_ENC_OFFSET = 132+220-7;
+	public final static double BR_ENC_OFFSET = 132+220-7-180;
 	
 	public final static double WHEEL_BASE_WIDTH = 23;
 	public final static double WHEEL_BASE_LENGTH = 16.5;
 	
 	//ButtonMap
-	public final static int X = 1;
-	public final static int A = 2;
-	public final static int B = 3;
-	public final static int Y = 4;
+	//square
+	public final static int X = 4;
+	//ecks
+	public final static int A = 3;
+	//circle
+	public final static int B = 2;
+	//triangle
+	public final static int Y = 1;
 	
-	public final static int LEFT_BUMPER = 5;
-	public final static int RIGHT_BUMPER = 6;
-	public final static int LEFT_TRIGGER = 7;
-	public final static int RIGHT_TRIGGER = 8;
+	public final static int LEFT_BUMPER = 7;
+	public final static int RIGHT_BUMPER = 8;
+	public final static int LEFT_TRIGGER = 5;
+	public final static int RIGHT_TRIGGER = 6;
 	
 	//RobotMap
 	public final static int FR_STEER = 0;
@@ -64,8 +68,8 @@ public class ConstantFactory {
 		//Actuator
 		public static double angleVoltage = 3.65;
 		public static double initVoltage = 3.1;
-		public static double hangVoltage = .2;
-		public static double bottomVoltage = 1.2;
+		public static double hangVoltage = .5;
+		public static double bottomVoltage = 1.3;
 		
 		//Stinger
 		public final static double SHOOTER_DELAY = 0.5;
