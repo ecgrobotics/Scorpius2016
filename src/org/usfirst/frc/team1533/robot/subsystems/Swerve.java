@@ -5,7 +5,6 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Talon;
 import edu.wpi.first.wpilibj.command.Subsystem;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
@@ -15,17 +14,19 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
  */
 public class Swerve extends Subsystem {
 	double pivotX, pivotY, lastpressed, startangle;
-	boolean lockwheels, rotating;
+	boolean lockwheels;
+	public static boolean rotating, angle;
 	public SwerveModule[] modules;
-	Joystick joy1;
+	Joystick joy1, joy2;
 	Gyro gyro;
 	SpeedController flDrive, frDrive, blDrive, brDrive, flsteer, frsteer, blsteer, brsteer;
 
 	/**
 	 * Custom constructor for current robot.
 	 */
-	public Swerve(Joystick joy1, Gyro gyro) {
+	public Swerve(Joystick joy1, Joystick joy2, Gyro gyro) {
 		this.joy1 = joy1;
+		this.joy2 = joy2;
 		this.gyro = gyro;
 		lockwheels = false;	
 		rotating = false;
@@ -124,19 +125,6 @@ public class Swerve extends Subsystem {
 			} else {
 				modules[i].rest();
 			}
-			//			if(!SmartDashboard.getBoolean("DEBUG MODE")){
-			//				SmartDashboard.putNumber(
-			//						i == 0 ? "FLAngle":
-			//							i == 1 ? "FRAngle":
-			//								i == 2 ? "BLAngle":
-			//									i == 3 ? "BRAngle" : null
-			//											, vects[i].getAngle()-Math.PI/2);
-			//				SmartDashboard.putNumber(
-			//						i == 0 ? "FLDrive":
-			//							i == 1 ? "FRDrive":
-			//								i == 2 ? "BLDrive":
-			//									i == 3 ? "BRDrive" : null, power);
-			//			}
 		}
 	}
 
@@ -167,80 +155,59 @@ public class Swerve extends Subsystem {
 		if((targetangle-currentangle)/180 < .04) rotating = false;
 	}
 
-	public void move(double rotationCorrect, Tank tank){
+	public void move(Tank tank){
 		//		if(!SmartDashboard.getBoolean("DEBUG MODE")){
+		int i = -1;
 		if(joy1.getPOV() == 0){
-			driveNormal(0, 1, rotationCorrect);
-			tank.autonomous(1, 0);
+			if(i<0){
+				angle = true;
+				i = 1;
+			}
+			driveNormal(0, .6, gyro.straight(angle));
 
 			rotating = false;
 			lockwheels = false;
 		}
 		else if(joy1.getPOV() == 180){
-			driveNormal(0, -1, rotationCorrect);
-			tank.autonomous(-1, 0);
+			if(i<0){
+				angle = true;
+				i = 1;
+			}
+			driveNormal(0, -.6, gyro.straight(angle));
 
 			rotating = false;
 			lockwheels = false;
-		}else if(joy1.getRawButton(ConstantFactory.RIGHT_TRIGGER)){
+		}
+		else if(joy1.getRawButton(ConstantFactory.RIGHT_TRIGGER)||joy2.getRawButton(ConstantFactory.LEFT_TRIGGER2)){
 			lockWheels();
+			rotating = false;
 		}else if(joy1.getRawButton(ConstantFactory.RIGHT_BUMPER)){
 			fullPower();
 
 			rotating = false;
 			lockwheels = false;
 		}else if(joy1.getRawButton(ConstantFactory.LEFT_BUMPER)){
-			if(lastpressed + 1000 > System.currentTimeMillis()){
-				startangle = gyro.getAngle();
-				rotating = true;
-			}
+			startangle = gyro.getAngle();
 			lockwheels = false;
+			rotating = true;
 		}
 		else {
-			if(Math.abs(joy1.getX())>.05 || Math.abs(joy1.getY())>.05 || Math.abs(joy1.getRawAxis(2))>.05){
-				driveNormal((joy1.getX()*55)/100, (-joy1.getY()*55)/100, (joy1.getRawAxis(2)*55)/100);
+			if(Math.abs(joy1.getX())>.05 || Math.abs(joy1.getY())>.05 || Math.abs(joy1.getRawAxis(3))>.05){
+				driveNormal((joy1.getX()*60)/100, (-joy1.getY()*60)/100, (joy1.getRawAxis(3)/2));
 				lockwheels = false;
 				rotating = false;
 			}
 			else if(lockwheels) lockWheels();
 			else if(rotating) pivot(180);
+			else driveNormal(0,0,0);
 		}
-
-
-		//		}else{
-		//			if(!SmartDashboard.getBoolean("FL")){
-		//				modules[0].driveController.set(SmartDashboard.getNumber("FLDrive"));
-		//				modules[0].steerPID.setSetpoint(SmartDashboard.getNumber("FLAngle"));
-		//			}
-		//			else stop(0);
-		//			if(!SmartDashboard.getBoolean("FR")){
-		//				modules[1].driveController.set(SmartDashboard.getNumber("FRDrive"));
-		//				modules[1].steerPID.setSetpoint(SmartDashboard.getNumber("FRAngle"));
-		//			}
-		//			else stop(1);
-		//			if(!SmartDashboard.getBoolean("BR")){
-		//				modules[2].driveController.set(SmartDashboard.getNumber("BRDrive"));
-		//				modules[2].steerPID.setSetpoint(SmartDashboard.getNumber("BRAngle"));
-		//			}
-		//			else stop(2);
-		//			if(SmartDashboard.getBoolean("BL")){
-		//				modules[3].driveController.set(SmartDashboard.getNumber("BLDrive"));
-		//				modules[3].steerPID.setSetpoint(SmartDashboard.getNumber("BLAngle"));
-		//			}
-		//			else stop(3);
-		//		}
 	}
 	public void stop(int module){
 		modules[module].driveController.set(0);
 		modules[module].steerController.set(0);
 	}
 	public void fullPower(){
-		driveNormal(joy1.getX()*9/10, joy1.getY()*9/10, joy1.getRawAxis(2)*55/100);
-	}
-
-	public void skipDefense(double direction, double rotationCorrect){
-		//		if(System.currentTimeMillis() <= (startTime + runTime)) driveNormal(direction, 0, rotationCorrect);
-		//		else skipDefense(direction, rotationCorrect);
+		driveNormal(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100);
 	}
 
 	public void lockWheels(){
@@ -248,6 +215,9 @@ public class Swerve extends Subsystem {
 		modules[1].set(-45, 0);
 		modules[2].set(-45, 0);
 		modules[3].set(45, 0);
+	}
+	public void fieldOrientation(){
+		
 	}
 
 	/**

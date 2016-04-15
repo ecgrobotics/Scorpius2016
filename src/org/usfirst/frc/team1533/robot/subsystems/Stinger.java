@@ -7,6 +7,7 @@ import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
+import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Stinger {
 	SpeedController climbR;
@@ -17,6 +18,7 @@ public class Stinger {
 	Timer timer;
 	Joystick joy;
 	double shootStartTime;
+	String pewpew;
 
 	public Stinger(Joystick joy2){
 		climbR = new CANTalon(ConstantFactory.CLIMB_R);
@@ -27,21 +29,23 @@ public class Stinger {
 		timer = new Timer();
 		this.joy = joy2;
 		shootStartTime = -1;
+		pewpew = new String("no");
 	}
 
 	public void climb(){
-		double target = joy.getRawButton(ConstantFactory.A) ? 1 :joy.getRawButton(ConstantFactory.Y)? -1 : joy.getRawButton(ConstantFactory.X) ? .25 : joy.getRawButton(ConstantFactory.B) ? -.25 : 0;
+		double target = joy.getRawButton(ConstantFactory.A2) ? 1 :joy.getRawButton(ConstantFactory.Y2)? -1 : joy.getRawButton(ConstantFactory.X2) ? .25 : joy.getRawButton(ConstantFactory.B2) ? -.25 : 0;
 		climbL.set(target);
 		climbR.set(-target);
 	}
 
 	public void shoot(){
-		if (joy.getRawButton(ConstantFactory.RIGHT_BUMPER)){
+		SmartDashboard.putString("shooting", pewpew);
+		if (joy.getRawButton(ConstantFactory.RIGHT_BUMPER2)){
 			runShooter(0);
 			if (shootStartTime < 0) shootStartTime = System.currentTimeMillis();
 			else if(System.currentTimeMillis()-shootStartTime > 50 && System.currentTimeMillis()-shootStartTime < 250) runRoller(1);
 			else if (System.currentTimeMillis()-shootStartTime > 250) runRoller(0);
-		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER)){
+		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER2)){
 			runShooter(1);
 			runRoller(1);
 			shootStartTime = -1;
@@ -56,12 +60,15 @@ public class Stinger {
 		if(buttonPressed == 0){			//shoots ball
 			shooterL.set(-1);
 			shooterR.set(1);
+			pewpew = "PEW! PEW!";
 		}else if(buttonPressed == 1){	//grabs ball
 			shooterL.set(.4);
 			shooterR.set(-.4);
+			pewpew = "grab";
 		}else{
 			shooterL.set(0);
 			shooterR.set(0);
+			pewpew = "no";
 		}
 	}
 

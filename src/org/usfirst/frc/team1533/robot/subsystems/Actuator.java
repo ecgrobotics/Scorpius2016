@@ -42,11 +42,13 @@ public class Actuator implements PIDOutput {
 		}
 		else if(joy2.getPOV() == 90){
 			pid.disable();
-			actuator.set(4.17 - encoder.getAverageVoltage());
+			actuator.set((3.89 - encoder.getAverageVoltage())*1);
 		}
-		else if(joy2.getPOV() == 270) moveTo(ConstantFactory.Steering.hangVoltage);		
-		else if(joy2.getRawButton(ConstantFactory.LEFT_BUMPER)) actuator.set(1);
-		else if(joy2.getRawButton(ConstantFactory.LEFT_TRIGGER)) actuator.set(-1);
+		else if(joy2.getPOV() == 270){
+			pid.disable();
+			actuator.set((1.5 - encoder.getAverageVoltage())*1);
+		}
+		
 		else{
 			pid.disable();
 			actuator.set(lerp(0));
@@ -59,7 +61,7 @@ public class Actuator implements PIDOutput {
 	}
 	public void dashboard(){
 //		SmartDashboard.putNumber("Arm Angle", encoder.getAverageVoltage());
-//		SmartDashboard.putNumber("Voltage", encoder.getVoltage());
+//		SmartDashboard.putNumber("Voltage", encoder.getAverageVoltage());
 	}
 	public static double lerp(double b){
 		speed = (b-speed)*4.8*.033 + speed;

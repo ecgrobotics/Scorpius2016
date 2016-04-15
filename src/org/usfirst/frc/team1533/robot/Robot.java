@@ -1,89 +1,73 @@
 
 package org.usfirst.frc.team1533.robot;
 
-import edu.wpi.first.wpilibj.CameraServer;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Scheduler;
 import edu.wpi.first.wpilibj.smartdashboard.SendableChooser;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
-
-import java.util.Comparator;
-
 import org.usfirst.frc.team1533.robot.subsystems.*;
-
-import com.ni.vision.NIVision;
 import com.ni.vision.NIVision.Image;
-import com.ni.vision.NIVision.ImageType;
 
 public class Robot extends IterativeRobot {
 	//TODO Rumble on Joystick
-	//TODO Test Labview
 	//TODO Easier encoder setting
 	//TODO Defense skipping
-	//TODO easy rotation
 	Swerve swerve;
 	Actuator actuator;
 	Tank tank;
 	Stinger stinger;
 	Joystick joy1, joy2, joy3;
 	Gyro gyro;
-    int session;
-    Image frame;
+	int session,i,itemp;
+	Image frame;
 
 
-    final String lowbar = "lowBar";
-    final String rockwall = "rockwall";
-    final String ramparts = "ramparts";
-    final String moat = "moat";  
+	final String lowbar = "lowBar";
+	final String rockwall = "rockwall";
+	final String ramparts = "ramparts";
+	final String moat = "moat";  
 
-    String autoSelected;
-    SendableChooser chooser;
-    String spaceSelected;
-    SendableChooser chooser2;
-    
-    double  startTime, runTime;
-    boolean part1, part2;
-    
-    /**
-     * This function is run when the robot is first started up and should be
-     * used for any initialization code.
-     */
-    public void robotInit() {
+	String autoSelected;
+	SendableChooser chooser;
+	String spaceSelected;
+	SendableChooser chooser2;
 
-    	joy1 = new Joystick(0);
-    	joy2 = new Joystick(1);
-    	gyro = new Gyro();
-    	tank = new Tank(joy1, joy2);
-    	swerve = new Swerve(joy1, gyro);
-    	actuator = new Actuator(joy1, joy2);
-    	stinger = new Stinger(joy2);
-    	
-    	
-        chooser = new SendableChooser();
-        chooser.addObject("Rock Wall", rockwall);
-        chooser.addObject("Low Bar", lowbar);
-        chooser.addObject("Ramparts", ramparts);
-        chooser.addObject("Moat", ramparts);
-        SmartDashboard.putData("Autonomous:", chooser);
-        
-        chooser2 = new SendableChooser();
-        chooser2.addObject("slot 1", "1");
-        chooser2.addObject("slot 2", "2");
-        chooser2.addObject("slot 3", "3");
-        chooser2.addObject("slot 4", "4");
-        chooser2.addObject("slot 5", "5");
-        SmartDashboard.putData("Space:", chooser2);
-        
-        
-        frame = NIVision.imaqCreateImage(NIVision.ImageType.IMAGE_RGB, 0);
-        session = NIVision.IMAQdxOpenCamera("cam1",
-                NIVision.IMAQdxCameraControlMode.CameraControlModeController);
-        NIVision.IMAQdxConfigureGrab(session);
+	double  startTime, runTime;
+	boolean part1, part2, part3;
 
 
-    }
-    
+	public void robotInit() {
+		i =0;
+		itemp = -1;
+		joy1 = new Joystick(0);
+		joy2 = new Joystick(1);
+		gyro = new Gyro();
+		tank = new Tank(joy1, joy2);
+		swerve = new Swerve(joy1, joy2, gyro);
+		actuator = new Actuator(joy1, joy2);
+		stinger = new Stinger(joy2);
+
+		chooser = new SendableChooser();
+		chooser.addObject("Rock Wall", rockwall);
+		chooser.addObject("Low Bar", lowbar);
+		chooser.addObject("Ramparts", ramparts);
+		chooser.addObject("Moat", ramparts);
+		SmartDashboard.putData("Autonomous:", chooser);
+		chooser2 = new SendableChooser();
+		chooser2.addObject("slot 1", "1");
+		chooser2.addObject("slot 2", "2");
+		chooser2.addObject("slot 3", "3");
+		chooser2.addObject("slot 4", "4");
+		chooser2.addObject("slot 5", "5");
+		SmartDashboard.putData("Space:", chooser2);
+
+
+		//    	CameraServer cam = CameraServer.getInstance();
+		//    	cam.setQuality(20);
+		//    	cam.startAutomaticCapture("cam0");
+	}
+
 	/**
 	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
 	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
@@ -93,79 +77,91 @@ public class Robot extends IterativeRobot {
 	 * You can add additional auto modes by adding additional comparisons to the switch structure below with additional strings.
 	 * If using the SendableChooser make sure to add them to the chooser code above as well.
 	 */
-    public void autonomousInit() {
+	public void autonomousInit() {
 		Gyro.gyro.reset();
 		part1 = true;
 		part2 = true;
+		part3 = false;
 		startTime = System.currentTimeMillis();
 		runTime = 10000;
-    	autoSelected = (String) chooser.getSelected();
-    	spaceSelected = (String) chooser2.getSelected();
+		autoSelected = (String) chooser.getSelected();
+		spaceSelected = (String) chooser2.getSelected();
 
 		System.out.println("Auto selected: " + autoSelected);
-    }
+	}
 
-    /**
-     * This function is called periodically during autonomous
-     */
-    public void autonomousPeriodic() {
-    	switch(autoSelected) {
-    	case rockwall: ConstantFactory.Steering.bottomVoltage = 1.3;
+	/**
+	 * This function is called periodically during autonomous
+	 */
+	public void autonomousPeriodic() {
+		switch(autoSelected) {
+		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.3;
+		runTime =4750;
 		break;
-	case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.3;
+		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.3;
+		runTime = 4000;
 		break;
-    	case lowbar: ConstantFactory.Steering.bottomVoltage = .28;
-    		break;
-    		}
-        Scheduler.getInstance().run();
-    	if(part1){
-    		SmartDashboard.putNumber("voltage", actuator.getAverageVoltage());
-    		if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
-    		else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
+		case lowbar: 
+			ConstantFactory.Steering.bottomVoltage = .28;
+			runTime = 4550;
+			break;
+		}
+		Scheduler.getInstance().run();
+		if(part1){
+			if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
+			else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
 				part1 = false;
-				}
+			}
 		}if(part2){
-			double z = gyro.getAngle() * -.02;
-			swerve.autonomous(0, -.5, z);
+			swerve.autonomous(0, -.6, gyro.angleCorrect());
 			tank.autonomous(0, -1);
 			if(System.currentTimeMillis() >= startTime + runTime){
-			part2 = false;
-			part1 = false;
+				swerve.autonomous(0, 0, 0);
+				tank.autonomous(0, 0);
+				part2 = false;
+				part1 = false;
+				Swerve.rotating = true;
 			}
+		}if(Swerve.rotating){
+			swerve.pivot(180);
 		}
-    }
+	}
 
-    /**
-     * This function is called periodically during operator control
-     */
-    public void operatorControl(){
-        NIVision.IMAQdxStartAcquisition(session);
-        NIVision.IMAQdxGrab(session, frame, 1);
-        CameraServer.getInstance().setImage(frame);
-       NIVision.IMAQdxStartAcquisition(session);
-    }
-    public void teleopPeriodic() {
-    	SmartDashboard.putNumber("Gyro", gyro.getAngle());
-        Scheduler.getInstance().run();
-        actuator.move();
-        tank.move();
-        swerve.move((gyro.getAngle() * -.025), tank);
-        stinger.climb();
-        stinger.shoot();
-        
-    	SmartDashboard.putNumber("FL", swerve.modules[0].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("FR", swerve.modules[1].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("BL", swerve.modules[2].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("BR", swerve.modules[3].getAngle()*180/Math.PI); 
-    }
-    public void disabledPeriodic(){
-    	SmartDashboard.putNumber("FL", swerve.modules[0].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("FR", swerve.modules[1].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("BL", swerve.modules[2].getAngle()*180/Math.PI);
-    	SmartDashboard.putNumber("BR", swerve.modules[3].getAngle()*180/Math.PI);    	
-    }
+	/**
+	 * This function is called periodically during operator control
+	 */
 
-    public void testPeriodic() {
-    
-    }
+
+	public void teleopPeriodic() {
+		Scheduler.getInstance().run();
+		actuator.move();
+		tank.move();
+		swerve.move(tank);
+		stinger.climb();
+		stinger.shoot();
+
+		//        if(i<100 && i> itemp){
+			//        	i++;
+		//        	itemp = i;
+		//        }else if(i>0 && itemp>i){
+		//        	i--;
+		//        	itemp = i;
+		//        }
+		//        SmartDashboard.putNumber("Duncan", i);
+
+		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI); 
+	}
+	public void disabledPeriodic(){
+		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    	
+	}
+
+	public void testPeriodic() {
+
+	}
 }

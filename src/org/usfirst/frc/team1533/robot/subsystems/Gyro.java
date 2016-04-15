@@ -6,15 +6,25 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro {
 	public static ADXRS450_Gyro gyro;
+	double currentangle;
 	
 	public Gyro(){
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
 		gyro.calibrate();
-		SmartDashboard.putNumber("Gyro", gyro.getAngle());
 	}
 
 	public double getAngle() {
 		return gyro.getAngle();
+	}
+	public double angleCorrect(){
+		return gyro.getAngle() * -.015;
+	}
+	public double straight(boolean angle){
+		if(angle){
+			currentangle = gyro.getAngle();
+			Swerve.angle = false;
+		}
+		return	(gyro.getAngle()-currentangle)*.015;
 	}
 
 }
