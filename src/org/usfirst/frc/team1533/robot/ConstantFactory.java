@@ -3,9 +3,9 @@ package org.usfirst.frc.team1533.robot;
 public class ConstantFactory {
 	//Swerve
 	public final static double FL_ENC_OFFSET = 353+84 - 6 -180;
-	public final static double FR_ENC_OFFSET = 305 +52+180-46+1;
-	public final static double BL_ENC_OFFSET = 217+49;
-	public final static double BR_ENC_OFFSET = 132+220-7-180+155-51-29-244+10;
+	public final static double FR_ENC_OFFSET = 305 +52+180-46+1+2-14+132+20+132+90-7;
+	public final static double BL_ENC_OFFSET = 217+49-25+50+2;
+	public final static double BR_ENC_OFFSET = 132+220-7-180+155-51-29-244+10-3+6;
 	
 	public final static double WHEEL_BASE_WIDTH = 23;
 	public final static double WHEEL_BASE_LENGTH = 16.5;
@@ -23,6 +23,7 @@ public class ConstantFactory {
 	
 	public final static int X2 = 1;
 	//ecks
+	
 	public final static int A2 = 2;
 	//circle
 	public final static int B2 = 3;
@@ -57,6 +58,8 @@ public class ConstantFactory {
 	public final static int FL_ENCODER = 2;
 	public final static int BL_ENCODER = 3;
 	public final static int ACTUATOR_ENCODER = 4;
+	
+	public final static int FLASHLIGHT = 2;
 
 	
 	public final static int L_TREAD = 8;

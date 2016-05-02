@@ -19,6 +19,9 @@ public class Gyro {
 	public double angleCorrect(){
 		return gyro.getAngle() * -.015;
 	}
+	public void reset(){
+		gyro.reset();
+	}
 	public double straight(boolean angle){
 		if(angle){
 			currentangle = gyro.getAngle();

@@ -43,8 +43,8 @@ public class Robot extends IterativeRobot {
 		joy1 = new Joystick(0);
 		joy2 = new Joystick(1);
 		gyro = new Gyro();
-		tank = new Tank(joy1, joy2);
 		swerve = new Swerve(joy1, joy2, gyro);
+		tank = new Tank(joy1, joy2, swerve);
 		actuator = new Actuator(joy1, joy2);
 		stinger = new Stinger(joy2);
 
@@ -95,14 +95,14 @@ public class Robot extends IterativeRobot {
 	 */
 	public void autonomousPeriodic() {
 		switch(autoSelected) {
-		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.3;
+		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
 		runTime =4750;
 		break;
-		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.3;
+		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.44;
 		runTime = 4000;
 		break;
 		case lowbar: 
-			ConstantFactory.Steering.bottomVoltage = .28;
+			ConstantFactory.Steering.bottomVoltage = .31;
 			runTime = 4550;
 			break;
 		}
@@ -114,10 +114,10 @@ public class Robot extends IterativeRobot {
 			}
 		}if(part2){
 			swerve.autonomous(0, -.6, gyro.angleCorrect());
-			tank.autonomous(0, -1);
+			tank.autonomous(-1);
 			if(System.currentTimeMillis() >= startTime + runTime){
 				swerve.autonomous(0, 0, 0);
-				tank.autonomous(0, 0);
+				tank.autonomous(0);
 				part2 = false;
 				part1 = false;
 				Swerve.rotating = true;
@@ -136,9 +136,10 @@ public class Robot extends IterativeRobot {
 		Scheduler.getInstance().run();
 		actuator.move();
 		tank.move();
-		swerve.move(tank);
+		swerve.move();
 		stinger.climb();
 		stinger.shoot();
+		stinger.flashlight();
 
 		//        if(i<100 && i> itemp){
 			//        	i++;

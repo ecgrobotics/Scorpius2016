@@ -4,6 +4,7 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.Relay;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 import edu.wpi.first.wpilibj.Timer;
@@ -19,8 +20,12 @@ public class Stinger {
 	Joystick joy;
 	double shootStartTime;
 	String pewpew;
+	Relay flashlight;
+	boolean on, flashy;
 
 	public Stinger(Joystick joy2){
+		on = false;
+		flashy = false;
 		climbR = new CANTalon(ConstantFactory.CLIMB_R);
 		climbL = new CANTalon(ConstantFactory.CLIMB_L);
 		shooterR = new Spark(ConstantFactory.STINGER_R);
@@ -30,12 +35,24 @@ public class Stinger {
 		this.joy = joy2;
 		shootStartTime = -1;
 		pewpew = new String("no");
+		flashlight = new Relay(ConstantFactory.FLASHLIGHT, Relay.Direction.kForward);
 	}
 
 	public void climb(){
 		double target = joy.getRawButton(ConstantFactory.A2) ? 1 :joy.getRawButton(ConstantFactory.Y2)? -1 : joy.getRawButton(ConstantFactory.X2) ? .25 : joy.getRawButton(ConstantFactory.B2) ? -.25 : 0;
 		climbL.set(target);
 		climbR.set(-target);
+	}
+	public void flashlight(){
+		if(joy.getRawButton(ConstantFactory.LEFT_BUMPER2)){
+			on = true;
+		}else {
+			if(on) flashy = !flashy;
+			on = false;
+		}
+		if(flashy) flashlight.set(Relay.Value.kOn);
+		else	flashlight.set(Relay.Value.kOff);
+		SmartDashboard.putBoolean("Flashlight?", flashy);
 	}
 
 	public void shoot(){
@@ -49,7 +66,8 @@ public class Stinger {
 			runShooter(1);
 			runRoller(1);
 			shootStartTime = -1;
-		}else{
+		}
+		else{
 			runShooter(2);
 			runRoller(2);
 			shootStartTime = -1;

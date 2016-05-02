@@ -42,7 +42,7 @@ public class Actuator implements PIDOutput {
 		}
 		else if(joy2.getPOV() == 90){
 			pid.disable();
-			actuator.set((3.89 - encoder.getAverageVoltage())*1);
+			actuator.set((3.72 - encoder.getAverageVoltage())*1);
 		}
 		else if(joy2.getPOV() == 270){
 			pid.disable();
