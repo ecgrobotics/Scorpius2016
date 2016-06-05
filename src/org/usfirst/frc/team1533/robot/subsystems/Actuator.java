@@ -17,7 +17,7 @@ public class Actuator implements PIDOutput {
 	PIDController pid;
 	static double speed;
 
-	public Actuator(Joystick joy1, Joystick joy2){
+	public Actuator(Joystick joy1, Joystick joy2, Vision vision){
 		actuator = new Spark(ConstantFactory.ACTUATOR);
 		encoder = new AnalogInput(ConstantFactory.ACTUATOR_ENCODER);
 		pid = new PIDController(1, 1, 1, encoder, this);

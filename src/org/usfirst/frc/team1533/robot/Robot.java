@@ -19,8 +19,7 @@ public class Robot extends IterativeRobot {
 	Stinger stinger;
 	Joystick joy1, joy2, joy3;
 	Gyro gyro;
-	int session,i,itemp;
-	Image frame;
+	Vision vision;
 
 
 	final String lowbar = "lowBar";
@@ -38,14 +37,13 @@ public class Robot extends IterativeRobot {
 
 
 	public void robotInit() {
-		i =0;
-		itemp = -1;
 		joy1 = new Joystick(0);
 		joy2 = new Joystick(1);
 		gyro = new Gyro();
-		swerve = new Swerve(joy1, joy2, gyro);
+		vision = new Vision(joy1, joy2);
+		swerve = new Swerve(joy1, joy2, gyro, vision);
 		tank = new Tank(joy1, joy2, swerve);
-		actuator = new Actuator(joy1, joy2);
+		actuator = new Actuator(joy1, joy2, vision);
 		stinger = new Stinger(joy2);
 
 		chooser = new SendableChooser();

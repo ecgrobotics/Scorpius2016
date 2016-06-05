@@ -29,7 +29,7 @@ public class Swerve extends Subsystem {
 	/**
 	 * Custom constructor for current robot.
 	 */
-	public Swerve(Joystick joy1, Joystick joy2, Gyro gyro) {
+	public Swerve(Joystick joy1, Joystick joy2, Gyro gyro, Vision vision) {
 		this.joy1 = joy1;
 		this.joy2 = joy2;
 		this.gyro = gyro;
