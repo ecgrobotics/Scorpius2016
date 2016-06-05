@@ -25,6 +25,7 @@ public class Swerve extends Subsystem {
 	Gyro gyro;
 	SpeedController flDrive, frDrive, blDrive, brDrive, flsteer, frsteer, blsteer, brsteer;
 	PIDController pid;
+	Vision vision;
 
 	/**
 	 * Custom constructor for current robot.
@@ -32,6 +33,7 @@ public class Swerve extends Subsystem {
 	public Swerve(Joystick joy1, Joystick joy2, Gyro gyro, Vision vision) {
 		this.joy1 = joy1;
 		this.joy2 = joy2;
+		this.vision = vision;
 		this.gyro = gyro;
 		apressed = false;
 		lockwheels = false;	
@@ -241,6 +243,14 @@ public class Swerve extends Subsystem {
 			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
 			else startangle = 0;
 			angleRotation = -120;
+			lockwheels = false;
+			rotating = true;
+		}
+		else if(joy1.getRawButton(ConstantFactory.B)){
+			//set turn robot to gyro 20
+			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
+			else startangle = 0;
+			angleRotation = vision.horizontal();
 			lockwheels = false;
 			rotating = true;
 		}

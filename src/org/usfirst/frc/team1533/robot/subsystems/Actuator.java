@@ -15,9 +15,11 @@ public class Actuator implements PIDOutput {
 	AnalogInput encoder;
 	Joystick joy1, joy2;
 	PIDController pid;
+	Vision vision;
 	static double speed;
 
 	public Actuator(Joystick joy1, Joystick joy2, Vision vision){
+		this.vision = vision;
 		actuator = new Spark(ConstantFactory.ACTUATOR);
 		encoder = new AnalogInput(ConstantFactory.ACTUATOR_ENCODER);
 		pid = new PIDController(1, 1, 1, encoder, this);
@@ -48,7 +50,10 @@ public class Actuator implements PIDOutput {
 			pid.disable();
 			actuator.set((1.5 - encoder.getAverageVoltage())*1);
 		}
-		
+		else if(joy2.getRawButton(ConstantFactory.X2)){
+			pid.disable();
+			actuator.set(vision.vertical());
+		}
 		else{
 			pid.disable();
 			actuator.set(lerp(0));
