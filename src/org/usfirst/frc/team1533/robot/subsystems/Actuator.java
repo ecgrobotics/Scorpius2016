@@ -52,7 +52,8 @@ public class Actuator implements PIDOutput {
 		}
 		else if(joy2.getRawButton(ConstantFactory.X2)){
 			pid.disable();
-			actuator.set(vision.vertical());
+			// goto angle determined by vision
+			actuator.set((vision.vertical() - encoder.getAverageVoltage())*1);
 		}
 		else{
 			pid.disable();

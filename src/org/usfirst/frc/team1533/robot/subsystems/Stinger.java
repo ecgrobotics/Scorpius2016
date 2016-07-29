@@ -1,6 +1,7 @@
 package org.usfirst.frc.team1533.robot.subsystems;
 
 import org.usfirst.frc.team1533.robot.ConstantFactory;
+import org.usfirst.frc.team1533.robot.Robot;
 
 import edu.wpi.first.wpilibj.CANTalon;
 import edu.wpi.first.wpilibj.Joystick;
@@ -60,9 +61,9 @@ public class Stinger {
 		if (joy.getRawButton(ConstantFactory.RIGHT_BUMPER2)){
 			runShooter(0);
 			if (shootStartTime < 0) shootStartTime = System.currentTimeMillis();
-			else if(System.currentTimeMillis()-shootStartTime > 50 && System.currentTimeMillis()-shootStartTime < 250) runRoller(1);
-			else if (System.currentTimeMillis()-shootStartTime > 250) runRoller(0);
-		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER2)){
+			else if(System.currentTimeMillis()-shootStartTime > 50 && System.currentTimeMillis()-shootStartTime < 1250) runRoller(1);
+			else if (System.currentTimeMillis()-shootStartTime > 1250) runRoller(0);
+		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER2) || Robot.joy1.getPOV()==90 || Robot.joy1.getPOV()==0){
 			runShooter(1);
 			runRoller(1);
 			shootStartTime = -1;
@@ -80,8 +81,8 @@ public class Stinger {
 			shooterR.set(1);
 			pewpew = "PEW! PEW!";
 		}else if(buttonPressed == 1){	//grabs ball
-			shooterL.set(.4);
-			shooterR.set(-.4);
+			shooterL.set(.6);
+			shooterR.set(-.6);
 			pewpew = "grab";
 		}else{
 			shooterL.set(0);

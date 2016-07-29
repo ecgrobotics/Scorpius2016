@@ -1,6 +1,7 @@
 
 package org.usfirst.frc.team1533.robot;
 
+import edu.wpi.first.wpilibj.AnalogInput;
 import edu.wpi.first.wpilibj.IterativeRobot;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.command.Scheduler;
@@ -17,9 +18,11 @@ public class Robot extends IterativeRobot {
 	Actuator actuator;
 	Tank tank;
 	Stinger stinger;
-	Joystick joy1, joy2, joy3;
+	public static Joystick joy1, joy2, joy3;
 	Gyro gyro;
 	Vision vision;
+	public static AnalogInput ballSenseLeft = new AnalogInput(5);
+	public static AnalogInput ballSenseRight = new AnalogInput(6);
 
 
 	final String lowbar = "lowBar";
@@ -138,6 +141,7 @@ public class Robot extends IterativeRobot {
 		stinger.climb();
 		stinger.shoot();
 		stinger.flashlight();
+		vision.process();
 
 		//        if(i<100 && i> itemp){
 			//        	i++;
@@ -152,12 +156,17 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI); 
+
+		SmartDashboard.putNumber("Left Ball Sensor", ballSenseLeft.getAverageVoltage());
+		SmartDashboard.putNumber("Right Ball Sensor", ballSenseRight.getAverageVoltage());
 	}
 	public void disabledPeriodic(){
 		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
-		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    	
+		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
+		
+		Gyro.gyro.calibrate();
 	}
 
 	public void testPeriodic() {

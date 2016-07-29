@@ -16,6 +16,11 @@ public class Gyro {
 	public double getAngle() {
 		return gyro.getAngle();
 	}
+	
+	public double getRate() {
+		return gyro.getRate();
+	}
+	
 	public double angleCorrect(){
 		return gyro.getAngle() * -.015;
 	}

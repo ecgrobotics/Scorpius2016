@@ -4,7 +4,7 @@ public class ConstantFactory {
 	//Swerve
 	public final static double FL_ENC_OFFSET = 353+84 - 6 -180;
 	public final static double FR_ENC_OFFSET = 305 +52+180-46+1+2-14+132+20+132+90-7;
-	public final static double BL_ENC_OFFSET = 217+49-25+50+2;
+	public final static double BL_ENC_OFFSET = 217+49-25+50+2-40+180;
 	public final static double BR_ENC_OFFSET = 132+220-7-180+155-51-29-244+10-3+6;
 	
 	public final static double WHEEL_BASE_WIDTH = 23;

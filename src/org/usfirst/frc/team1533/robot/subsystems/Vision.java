@@ -1,5 +1,7 @@
 package org.usfirst.frc.team1533.robot.subsystems;
 
+import java.util.Arrays;
+
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 import edu.wpi.first.wpilibj.Joystick;
@@ -15,7 +17,7 @@ public class Vision {
 
 	public Vision(Joystick joy1, Joystick joy2){
 		toggle = false;
-		p = false;
+		p = true;
 		this.joy1 = joy1;
 		this.joy2 = joy2;
 		table = NetworkTable.getTable("GRIP/myContoursReport");
@@ -26,12 +28,12 @@ public class Vision {
 		if(joy1.getRawButton(ConstantFactory.A)){
 			toggle = true;
 		}else {
-			if(toggle) p = !p;
+//			if(toggle) p = !p;
 			toggle = false;
 		}
 		if(p){
 			double[] areas = table.getNumberArray("area", defaultValue);
-
+			
 			double max = 0;
 			//find index for goal aiming for
 			for(int i = 0; i < areas.length; i++)
@@ -46,13 +48,21 @@ public class Vision {
 	public double vertical(){
 		double[] y = table.getNumberArray("centerY", defaultValue);
 		//random operation to transform y to actuator val
-		double setpoint = y[index]*420;
-		return setpoint;
+		try {
+			double setpoint = y[index]*420;
+			return setpoint;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 	public double horizontal(){
 		double[] x = table.getNumberArray("centerX", defaultValue);
 		//rand operation to transform x to rotation setpoint
-		double rotate = x[index]*254;
-		return rotate;
+		try {
+			double rotate = (x[index]-160)/320d*50*10.01;
+			return rotate;
+		} catch (Exception e) {
+			return 0;
+		}
 	}
 }

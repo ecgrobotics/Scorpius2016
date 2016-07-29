@@ -9,6 +9,7 @@ import edu.wpi.first.wpilibj.command.Subsystem;
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 import org.usfirst.frc.team1533.robot.ConstantFactory;
+import org.usfirst.frc.team1533.robot.Robot;
 
 /**
  * @author Duncan
@@ -16,7 +17,7 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
  */
 public class Swerve extends Subsystem {
 	double pivotX, pivotY, lastpressed, startangle, angleRotation, transAngle, pivotspeed;
-	boolean lockwheels, drivingField, apressed;
+	boolean lockwheels, drivingField, ypressed;
 	public static boolean rotating, angle;
 	public SwerveModule[] modules;
 	boolean fieldOrientation = false;
@@ -35,7 +36,7 @@ public class Swerve extends Subsystem {
 		this.joy2 = joy2;
 		this.vision = vision;
 		this.gyro = gyro;
-		apressed = false;
+		ypressed = false;
 		lockwheels = false;	
 		drivingField = false;
 		angleRotation = 0;
@@ -164,12 +165,7 @@ public class Swerve extends Subsystem {
 	 * @param rotation relative rate of rotation around pivot point (-1 to 1) positive is clockwise
 	 */
 	private Vector correctOrientationVector(double x, double y) {
-		double angle;
-		if (gyro.getAngle() != 0){
-			angle =( ((gyro.getAngle())+180) * Math.PI / 180 );
-		} else	angle = 0;
-
-
+		double angle = gyro.getAngle() * Math.PI / 180;
 		return new Vector (x*Math.cos(angle) - y*Math.sin(angle), x*Math.sin(angle) + y*Math.cos(angle));
 	}
 
@@ -193,8 +189,9 @@ public class Swerve extends Subsystem {
 	public void pivot(double degrees){
 		double currentangle = gyro.getAngle();
 		double targetangle = startangle + degrees;
-		driveNormal(0,0,(targetangle-currentangle)/360);
-		if(Math.abs(targetangle-currentangle)/360 < .04) rotating = false;
+//		driveNormal(0,0,(targetangle-currentangle)/180);
+		driveNormal(0, 0, Math.max(-.25, Math.min(.25, (targetangle-currentangle)/180 - gyro.getRate()/180)));
+		if(Math.abs(targetangle-currentangle)/180 < .04) rotating = false;
 		SmartDashboard.putNumber("target angle", targetangle);
 		SmartDashboard.putNumber("current angle", currentangle);
 		SmartDashboard.putNumber("ratio", (targetangle-currentangle)/180);
@@ -216,10 +213,10 @@ public class Swerve extends Subsystem {
 				angle = true;
 				i = 1;
 			}
-			driveNormal(0, .6, gyro.straight(angle));
-
+			driveNormal(0, .257, gyro.straight(angle));
 			rotating = false;
 			lockwheels = false;
+			return;
 		}else if(joy1.getPOV() == 180){
 			//set turn robot to gyro 0
 			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
@@ -231,12 +228,24 @@ public class Swerve extends Subsystem {
 			rotating = true;
 		}
 		else if(joy1.getPOV() == 90){
-			//set turn robot to gyro -20
-			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
-			else startangle = 0;
-			angleRotation = 120;
+			if(i<0){
+				angle = true;
+				i = 1;
+			}
+			double z = joy1.getRawAxis(3);
+			if (Math.abs(z) < .2) z = 0;
+			double diff = Robot.ballSenseRight.getAverageVoltage()-Robot.ballSenseLeft.getAverageVoltage();
+			driveNormal(0, .25-.05*Math.abs(diff), .05*diff+z*.2);
+			rotating = false;
 			lockwheels = false;
-			rotating = true;
+			return;
+			
+			//set turn robot to gyro -20
+//			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
+//			else startangle = 0;
+//			angleRotation = 120;
+//			lockwheels = false;
+//			rotating = true;
 		}
 		else if(joy1.getPOV() == 270){
 			//set turn robot to gyro 20
@@ -250,7 +259,7 @@ public class Swerve extends Subsystem {
 			//set turn robot to gyro 20
 			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
 			else startangle = 0;
-			angleRotation = vision.horizontal();
+			angleRotation = gyro.getAngle()+vision.horizontal()-startangle;
 			lockwheels = false;
 			rotating = true;
 		}
@@ -258,11 +267,12 @@ public class Swerve extends Subsystem {
 		
 		//if released toggle field orient
 
-		if(joy1.getRawButton(ConstantFactory.A)){	
-			apressed = true;
+		if(joy1.getRawButton(ConstantFactory.Y)){	
+			System.out.println("y pressed");
+			if (!ypressed) drivingField = !drivingField;
+			ypressed = true;
 		}else{
-			if(apressed) drivingField = !drivingField;
-			apressed = false;
+			ypressed = false;
 		}
 		if(joy1.getRawButton(ConstantFactory.X)) gyro.reset();
 		if(joy1.getRawButton(ConstantFactory.RIGHT_TRIGGER)||joy2.getRawButton(ConstantFactory.LEFT_TRIGGER2)){
@@ -280,13 +290,21 @@ public class Swerve extends Subsystem {
 			rotating = true;
 		}
 		else {
-			if((Math.abs(joy1.getX())>.05 || Math.abs(joy1.getY())>.05 || Math.abs(joy1.getRawAxis(3))>.05) && !drivingField){
-				driveNormal((joy1.getX()*60)/100, (-joy1.getY()*60)/100, (joy1.getRawAxis(3)/2));
+			// p.s. the dead zone got bigger
+			double x = joy1.getX();
+			double y = joy1.getY();
+			double z = joy1.getRawAxis(3);
+			if (Math.abs(x) < .2) x = 0;
+			if (Math.abs(y) < .2) y = 0;
+			if (Math.abs(z) < .2) z = 0;
+			
+			if((x!=0 || y!=0 || z!=0) && !drivingField){
+				driveNormal((x*60)/100, (-y*60)/100, (z/2));
 				lockwheels = false;
 				rotating = false;
 			}
-			else if((Math.abs(joy1.getX())>.05 || Math.abs(joy1.getY())>.05 || Math.abs(joy1.getRawAxis(3))>.05) && drivingField){
-				driveField((joy1.getX()*60)/100, (-joy1.getY()*60)/100, (joy1.getRawAxis(3)/2));
+			else if((x!=0 || y!=0 || z!=0) && drivingField){
+				driveField((x*60)/100, (-y*60)/100, (z/2));
 				lockwheels = false;
 				rotating = false;
 			}			else if(lockwheels) lockWheels();
