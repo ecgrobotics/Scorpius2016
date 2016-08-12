@@ -35,8 +35,8 @@ public class Robot extends IterativeRobot {
 	String spaceSelected;
 	SendableChooser chooser2;
 
-	double  startTime, runTime;
-	boolean part1, part2, part3;
+	double  startTime, runTime, alignTime;
+	boolean part1, part2, part3, defense, over, goingover,  stop, part4, part5;
 
 
 	public void robotInit() {
@@ -45,15 +45,16 @@ public class Robot extends IterativeRobot {
 		gyro = new Gyro();
 		vision = new Vision(joy1, joy2);
 		swerve = new Swerve(joy1, joy2, gyro, vision);
-		tank = new Tank(joy1, joy2, swerve);
-		actuator = new Actuator(joy1, joy2, vision);
+		tank = new Tank(joy1, joy2, swerve, gyro);
 		stinger = new Stinger(joy2);
+		actuator = new Actuator(joy1, joy2, vision, stinger);
 
+		gyro.gyro.calibrate();
 		chooser = new SendableChooser();
 		chooser.addObject("Rock Wall", rockwall);
 		chooser.addObject("Low Bar", lowbar);
 		chooser.addObject("Ramparts", ramparts);
-		chooser.addObject("Moat", ramparts);
+		chooser.addObject("Moat", ramparts); 
 		SmartDashboard.putData("Autonomous:", chooser);
 		chooser2 = new SendableChooser();
 		chooser2.addObject("slot 1", "1");
@@ -64,9 +65,6 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Space:", chooser2);
 
 
-		//    	CameraServer cam = CameraServer.getInstance();
-		//    	cam.setQuality(20);
-		//    	cam.startAutomaticCapture("cam0");
 	}
 
 	/**
@@ -83,8 +81,11 @@ public class Robot extends IterativeRobot {
 		part1 = true;
 		part2 = true;
 		part3 = false;
+		part4 = false;
+		part5 = false;
 		startTime = System.currentTimeMillis();
-		runTime = 10000;
+		runTime = 6000;
+		alignTime = 1500;
 		autoSelected = (String) chooser.getSelected();
 		spaceSelected = (String) chooser2.getSelected();
 
@@ -114,26 +115,68 @@ public class Robot extends IterativeRobot {
 				part1 = false;
 			}
 		}if(part2){
+
 			swerve.autonomous(0, -.6, gyro.angleCorrect());
 			tank.autonomous(-1);
-			if(System.currentTimeMillis() >= startTime + runTime){
+			if((System.currentTimeMillis() >= startTime + runTime)){
 				swerve.autonomous(0, 0, 0);
 				tank.autonomous(0);
 				part2 = false;
 				part1 = false;
+				part3 = true;
 				Swerve.rotating = true;
 			}
-		}if(Swerve.rotating){
-			swerve.pivot(180);
+		}if(part3){
+			if(Swerve.rotating)
+				swerve.pivot(180);
+			startTime = System.currentTimeMillis();
 		}
+		else if(!Swerve.rotating){
+			if(System.currentTimeMillis() >= startTime + alignTime)
+				swerve.visionAlign();
+			else{
+				part3 = false;
+				part4 = true;
+				Swerve.rotating = true;
+			}
+		}
+		if(part4){
+			if(Swerve.rotating){
+				swerve.pivot(180);
+				startTime = System.currentTimeMillis();
+			}
+			else{
+				if(gyro.acc.getX() <= 2.6 || System.currentTimeMillis() <= startTime +500){
+					swerve.autonomous(0, -.6, gyro.angleCorrect());
+					tank.autonomous(1);
+				}
+				else if(actuator.getAverageVoltage() <= 3.7 ){
+					actuator.moveTo(4);
+					tank.autonomous(.5);
+					swerve.autonomous(0, -.3, gyro.angleCorrect());
+				}
+				else{
+					part4 = false;
+					part5 = true;
+					startTime = System.currentTimeMillis();
+				}
+			}
+		}if(part5){
+			if(System.currentTimeMillis() <= startTime + 2000)
+				stinger.autoExtend();
+			else if(System.currentTimeMillis() <= startTime + 6000)
+				stinger.autoRetract();
+		}
+
 	}
 
 	/**
-	 * This function is called periodically during operator control
+	 * This function is called periodically d uring operator control
 	 */
 
 
 	public void teleopPeriodic() {
+		SmartDashboard.putNumber("Joy", joy2.getRawAxis(2));
 		Scheduler.getInstance().run();
 		actuator.move();
 		tank.move();
@@ -141,21 +184,12 @@ public class Robot extends IterativeRobot {
 		stinger.climb();
 		stinger.shoot();
 		stinger.flashlight();
-		vision.process();
-
-		//        if(i<100 && i> itemp){
-			//        	i++;
-		//        	itemp = i;
-		//        }else if(i>0 && itemp>i){
-		//        	i--;
-		//        	itemp = i;
-		//        }
-		//        SmartDashboard.putNumber("Duncan", i);
+		//		vision.process();
 
 		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
-		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI); 
+		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);
 
 		SmartDashboard.putNumber("Left Ball Sensor", ballSenseLeft.getAverageVoltage());
 		SmartDashboard.putNumber("Right Ball Sensor", ballSenseRight.getAverageVoltage());
@@ -165,8 +199,8 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
-		
-		Gyro.gyro.calibrate();
+
+		//		Gyro.gyro.calibrate();
 	}
 
 	public void testPeriodic() {

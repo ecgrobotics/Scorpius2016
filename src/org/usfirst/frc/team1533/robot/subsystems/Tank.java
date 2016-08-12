@@ -5,86 +5,46 @@ import org.usfirst.frc.team1533.robot.ConstantFactory;
 import edu.wpi.first.wpilibj.Joystick;
 import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
+import edu.wpi.first.wpilibj.SpeedController;
 
 public class Tank {
 	RobotDrive drive;
 	Joystick joy;
 	double speedX, speedY;
 	Swerve swerve;
-	Spark left, right;
+	SpeedController left, right;
+	Gyro gyro;
 
-
-	public Tank(Joystick joy1, Joystick joy2, Swerve swerve){
+	public Tank(Joystick joy1, Joystick joy2, Swerve swerve, Gyro gyro){
 		this.swerve = swerve;
 		this.joy = joy1;
-				drive = new RobotDrive(ConstantFactory.L_TREAD, ConstantFactory.R_TREAD);
-		//		speedX = 0;
-		//		speedY = 0;
-//		left = new Spark(ConstantFactory.L_TREAD);
-//		right = new Spark(ConstantFactory.R_TREAD);
+		left = new Spark(ConstantFactory.L_TREAD);
+		right = new Spark(ConstantFactory.R_TREAD);
+		this.gyro = gyro;
 	}
 
 	public void move(){
-
-				if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER) && !swerve.drivingField){
-					if(Math.abs(joy.getRawAxis(1)) > .05) speedX = -joy.getRawAxis(1);
-					else speedX = 0;
-					if(Math.abs(joy.getRawAxis(2)) > .05) speedY = -joy.getRawAxis(2);
-					else speedY = 0;
-					drive.arcadeDrive(Math.max(-1,Math.min(speedY,1)), Math.max(-1,Math.min(speedX,1)), false);
-				}
-				else{
-					drive.arcadeDrive(0,0,false);
-				}
-//		double speedleft;
-//		double speedright;
-//		if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER) && !swerve.drivingField){
-//			if (swerve.getTrans().y > 0.0) {
-//				if (swerve.getTrans().x > 0.0) {
-//					speedleft = -(swerve.getTrans().y - swerve.getTrans().x);
-//					speedright = -(Math.max(swerve.getTrans().y,	swerve.getTrans().x));
-//				} else {
-//					speedleft = -(Math.max(swerve.getTrans().y, -swerve.getTrans().x));
-//					speedright = -(swerve.getTrans().y + swerve.getTrans().x);
-//				}
-//			} else {
-//				if (swerve.getTrans().x > 0.0) {
-//					speedleft = (Math.max(-swerve.getTrans().y, swerve.getTrans().x));
-//					speedright = -(swerve.getTrans().y + swerve.getTrans().x);
-//				} else {
-//					speedleft = -(swerve.getTrans().y - swerve.getTrans().x);
-//					speedright = (Math.max(-swerve.getTrans().y, -swerve.getTrans().x));
-//				}
-//			}
-//			left.set(speedleft);
-//			right.set(speedright);
-//		}else if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER) && swerve.drivingField){
-//			if (swerve.getTrans().y > 0.0) {
-//				if (swerve.getTrans().x > 0.0) {
-//					speedleft = -(swerve.getTrans().y - swerve.getTrans().x);
-//					speedright = -(Math.max(swerve.getTrans().y,	swerve.getTrans().x));
-//				} else {
-//					speedleft = -(Math.max(swerve.getTrans().y, -swerve.getTrans().x));
-//					speedright = -(swerve.getTrans().y + swerve.getTrans().x);
-//				}
-//			} else {
-//				if (swerve.getTrans().x > 0.0) {
-//					speedleft = (Math.max(-swerve.getTrans().y, swerve.getTrans().x));
-//					speedright = -(swerve.getTrans().y + swerve.getTrans().x);
-//				} else {
-//					speedleft = -(swerve.getTrans().y - swerve.getTrans().x);
-//					speedright = (Math.max(-swerve.getTrans().y, -swerve.getTrans().x));
-//				}
-//			}
-//			left.set(speedleft);
-//			right.set(speedright);
-//		}
-//		else {
-//			left.set(0);
-//			right.set(0);
-//		}
+		double transx, transy;
+		double angle = gyro.getAngle() * Math.PI / 180;
+		if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER)){
+			if(swerve.drivingField){
+				transx = (-joy.getX()*Math.cos(angle) - joy.getY()*Math.sin(angle));
+				transy = -joy.getX()*Math.sin(angle) + joy.getY()*Math.cos(angle);
+			}else{
+				transx = joy.getX();
+				transy = joy.getY();
+			}
+			left.set((transy-transx));
+			right.set((transy + transx));
+			
+		}
+		else{
+			left.set(0);
+			right.set(0);
+		}
 	}
 	public void autonomous(double speed){
-		drive.arcadeDrive(0,speed);
-	}
+		right.set(speed);
+		left.set(speed);
+}
 }

@@ -17,8 +17,9 @@ public class Actuator implements PIDOutput {
 	PIDController pid;
 	Vision vision;
 	static double speed;
+	Stinger stinger;
 
-	public Actuator(Joystick joy1, Joystick joy2, Vision vision){
+	public Actuator(Joystick joy1, Joystick joy2, Vision vision, Stinger stinger){
 		this.vision = vision;
 		actuator = new Spark(ConstantFactory.ACTUATOR);
 		encoder = new AnalogInput(ConstantFactory.ACTUATOR_ENCODER);
@@ -26,6 +27,7 @@ public class Actuator implements PIDOutput {
 		this.joy1 = joy1;
 		this.joy2 = joy2;
 		speed = 0;
+		this.stinger = stinger;
 
 		
 		
@@ -34,6 +36,7 @@ public class Actuator implements PIDOutput {
 	}
 
 	public void move(){
+		SmartDashboard.putNumber("vertical", vision.vertical());
 		if(joy2.getPOV() == 0){
 			pid.disable();
 			actuator.set(lerp(1));
@@ -48,12 +51,12 @@ public class Actuator implements PIDOutput {
 		}
 		else if(joy2.getPOV() == 270){
 			pid.disable();
-			actuator.set((1.5 - encoder.getAverageVoltage())*1);
+			actuator.set((vision.vertical() - encoder.getAverageVoltage())*1);
 		}
 		else if(joy2.getRawButton(ConstantFactory.X2)){
 			pid.disable();
 			// goto angle determined by vision
-			actuator.set((vision.vertical() - encoder.getAverageVoltage())*1);
+			actuator.set(((vision.vertical() +1) - encoder.getAverageVoltage())*2);
 		}
 		else{
 			pid.disable();

@@ -44,6 +44,14 @@ public class Stinger {
 		climbL.set(target);
 		climbR.set(-target);
 	}
+	public void autoExtend(){
+		climbL.set(1);
+		climbR.set(-1);
+	}
+	public void autoRetract(){
+		climbL.set(-1);
+		climbR.set(1);
+	}
 	public void flashlight(){
 		if(joy.getRawButton(ConstantFactory.LEFT_BUMPER2)){
 			on = true;
@@ -67,7 +75,10 @@ public class Stinger {
 			runShooter(1);
 			runRoller(1);
 			shootStartTime = -1;
-		}
+		}else if(joy.getRawButton(ConstantFactory.LEFT_BUMPER2))
+			runRoller(0);
+		else if(joy.getPOV() == 270)
+			runShooter(0);
 		else{
 			runShooter(2);
 			runRoller(2);
