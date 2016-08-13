@@ -4,11 +4,10 @@ import edu.wpi.first.wpilibj.ADXL362;
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
 import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro {
-	public static ADXRS450_Gyro gyro;
-	public static ADXL362 acc;
+	public ADXRS450_Gyro gyro;
+	public ADXL362 acc;
 	public double currentangle;
 	
 	public Gyro(){
@@ -27,10 +26,11 @@ public class Gyro {
 	public double angleCorrect(){
 		return gyro.getAngle() * -.015;
 	}
+	
 	public void reset(){
 		gyro.reset();
 	}
-
+	
 	public double straight(boolean angle){
 		if(angle){
 			currentangle = gyro.getAngle();

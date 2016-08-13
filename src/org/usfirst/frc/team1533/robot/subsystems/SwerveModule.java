@@ -4,7 +4,6 @@ package org.usfirst.frc.team1533.robot.subsystems;
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 import edu.wpi.first.wpilibj.*;
-import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 /**
  * @author Duncan

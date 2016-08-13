@@ -3,19 +3,17 @@ package org.usfirst.frc.team1533.robot.subsystems;
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 import edu.wpi.first.wpilibj.Joystick;
-import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
 import edu.wpi.first.wpilibj.SpeedController;
 
 public class Tank {
-	RobotDrive drive;
 	Joystick joy;
 	double speedX, speedY;
 	Swerve swerve;
 	SpeedController left, right;
 	Gyro gyro;
 
-	public Tank(Joystick joy1, Joystick joy2, Swerve swerve, Gyro gyro){
+	public Tank(Joystick joy1, Swerve swerve, Gyro gyro){
 		this.swerve = swerve;
 		this.joy = joy1;
 		left = new Spark(ConstantFactory.L_TREAD);
