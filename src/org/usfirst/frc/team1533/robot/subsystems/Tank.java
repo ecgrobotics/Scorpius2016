@@ -12,7 +12,12 @@ public class Tank {
 	Spark left, right;
 
 <<<<<<< HEAD
+<<<<<<< HEAD
 	public Tank(Joystick joy1, Swerve swerve, Gyro gyro){
+=======
+
+	public Tank(Joystick joy1, Joystick joy2, Swerve swerve){
+>>>>>>> parent of 4f751c5... Update
 =======
 
 	public Tank(Joystick joy1, Joystick joy2, Swerve swerve){

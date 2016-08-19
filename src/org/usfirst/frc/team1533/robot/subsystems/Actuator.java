@@ -25,6 +25,9 @@ public class Actuator implements PIDOutput {
 	static double speed;
 
 	public Actuator(Joystick joy1, Joystick joy2, Vision vision){
+<<<<<<< HEAD
+>>>>>>> parent of 4f751c5... Update
+=======
 >>>>>>> parent of 4f751c5... Update
 		this.vision = vision;
 
@@ -84,6 +87,9 @@ public class Actuator implements PIDOutput {
 			pid.disable();
 			// goto angle determined by vision
 			actuator.set((vision.vertical() - encoder.getAverageVoltage())*1);
+<<<<<<< HEAD
+>>>>>>> parent of 4f751c5... Update
+=======
 >>>>>>> parent of 4f751c5... Update
 		}
 		else{

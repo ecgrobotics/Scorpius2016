@@ -42,9 +42,15 @@ public class Robot extends IterativeRobot {
 		vision = new Vision();
 		swerve = new Swerve(joy1, joy2, gyro, vision);
 <<<<<<< HEAD
+<<<<<<< HEAD
 		tank = new Tank(joy1, swerve, gyro);
 		stinger = new Stinger(joy2);
 		actuator = new Actuator(joy2, vision);
+=======
+		tank = new Tank(joy1, joy2, swerve);
+		actuator = new Actuator(joy1, joy2, vision);
+		stinger = new Stinger(joy2);
+>>>>>>> parent of 4f751c5... Update
 =======
 		tank = new Tank(joy1, joy2, swerve);
 		actuator = new Actuator(joy1, joy2, vision);
@@ -116,6 +122,7 @@ public class Robot extends IterativeRobot {
 				Swerve.rotating = true;
 			}
 <<<<<<< HEAD
+<<<<<<< HEAD
 		}if(part3){
 			if(Swerve.rotating)
 				swerve.pivot(180);
@@ -160,6 +167,10 @@ public class Robot extends IterativeRobot {
 		}if(Swerve.rotating){
 			swerve.pivot(180);
 >>>>>>> parent of 4f751c5... Update
+=======
+		}if(Swerve.rotating){
+			swerve.pivot(180);
+>>>>>>> parent of 4f751c5... Update
 		}
 	}
 
@@ -194,6 +205,9 @@ public class Robot extends IterativeRobot {
 		//        }
 		//        SmartDashboard.putNumber("Duncan", i);
 
+<<<<<<< HEAD
+>>>>>>> parent of 4f751c5... Update
+=======
 >>>>>>> parent of 4f751c5... Update
 		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
@@ -209,6 +223,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
 <<<<<<< HEAD
+<<<<<<< HEAD
+=======
+		
+		Gyro.gyro.calibrate();
+>>>>>>> parent of 4f751c5... Update
 =======
 		
 		Gyro.gyro.calibrate();
