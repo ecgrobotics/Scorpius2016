@@ -325,7 +325,10 @@ public class Swerve extends Subsystem {
 		modules[module].steerController.set(0);
 	}
 	public void fullPower(){
-		driveNormal(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100);
+		if(!drivingField)
+			driveNormal(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100);
+		else
+			driveWithOrient(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100, true);
 	}
 
 	public void lockWheels(){

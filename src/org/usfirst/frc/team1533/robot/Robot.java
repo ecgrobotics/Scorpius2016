@@ -14,7 +14,7 @@ public class Robot extends IterativeRobot {
 	Actuator actuator;
 	Tank tank;
 	Stinger stinger;
-	public static Joystick joy1, joy2, joy3;
+	public static Joystick joy1, joy2;
 	Gyro gyro;
 	Vision vision;
 	public static AnalogInput ballSenseLeft = new AnalogInput(5);
