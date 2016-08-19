@@ -16,14 +16,21 @@ public class Actuator implements PIDOutput {
 	Joystick joy;
 	PIDController pid;
 	Vision vision;
+<<<<<<< HEAD
 	double speed = 0, offset;
 
 	public Actuator(Joystick joy, Vision vision){
 		this.joy = joy;
+=======
+	static double speed;
+
+	public Actuator(Joystick joy1, Joystick joy2, Vision vision){
+>>>>>>> parent of 4f751c5... Update
 		this.vision = vision;
 
 		actuator = new Spark(ConstantFactory.ACTUATOR);
 		encoder = new AnalogInput(ConstantFactory.ACTUATOR_ENCODER);
+<<<<<<< HEAD
 		pid = new PIDController(1, 1, 1, encoder, actuator);
 		pid.setInputRange(0, 5);
 	}
@@ -34,6 +41,21 @@ public class Actuator implements PIDOutput {
 
 
 		if(joy.getPOV() == 0){
+=======
+		pid = new PIDController(1, 1, 1, encoder, this);
+		this.joy1 = joy1;
+		this.joy2 = joy2;
+		speed = 0;
+
+		
+		
+		pid.setInputRange(.2, 5);
+		pid.disable();
+	}
+
+	public void move(){
+		if(joy2.getPOV() == 0){
+>>>>>>> parent of 4f751c5... Update
 			pid.disable();
 			actuator.set(lerp(1));
 		}
@@ -41,6 +63,7 @@ public class Actuator implements PIDOutput {
 			pid.disable();
 			actuator.set(lerp(-1));
 		}
+<<<<<<< HEAD
 		else if(joy.getPOV() == 90){
 			pid.enable();
 			pid.setSetpoint(3.5);
@@ -48,6 +71,20 @@ public class Actuator implements PIDOutput {
 		else if(joy.getPOV() == 270){
 			pid.enable();
 			pid.setSetpoint(vision.vertical() + offset);
+=======
+		else if(joy2.getPOV() == 90){
+			pid.disable();
+			actuator.set((3.72 - encoder.getAverageVoltage())*1);
+		}
+		else if(joy2.getPOV() == 270){
+			pid.disable();
+			actuator.set((1.5 - encoder.getAverageVoltage())*1);
+		}
+		else if(joy2.getRawButton(ConstantFactory.X2)){
+			pid.disable();
+			// goto angle determined by vision
+			actuator.set((vision.vertical() - encoder.getAverageVoltage())*1);
+>>>>>>> parent of 4f751c5... Update
 		}
 		else{
 			pid.disable();

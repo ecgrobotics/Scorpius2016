@@ -17,7 +17,7 @@ import org.usfirst.frc.team1533.robot.Robot;
  */
 public class Swerve extends Subsystem {
 	double pivotX, pivotY, lastpressed, startangle, angleRotation, transAngle, pivotspeed;
-	public boolean lockwheels, drivingField, ypressed;
+	boolean lockwheels, drivingField, ypressed;
 	public static boolean rotating, angle;
 	public SwerveModule[] modules;
 	boolean fieldOrientation = false;
@@ -42,7 +42,7 @@ public class Swerve extends Subsystem {
 		angleRotation = 0;
 		rotating = false;
 		lastpressed = System.currentTimeMillis() + 1000;
-		//		pid = new PIDController(1, 0, 3, gyro, pivotspeed);
+//		pid = new PIDController(1, 0, 3, gyro, pivotspeed);
 		//initialize array of modules
 		//array can be any size, as long as the position of each module is specified in its constructor
 		modules = new SwerveModule[] {
@@ -189,7 +189,7 @@ public class Swerve extends Subsystem {
 	public void pivot(double degrees){
 		double currentangle = gyro.getAngle();
 		double targetangle = startangle + degrees;
-		//		driveNormal(0,0,(targetangle-currentangle)/180);
+//		driveNormal(0,0,(targetangle-currentangle)/180);
 		driveNormal(0, 0, Math.max(-.25, Math.min(.25, (targetangle-currentangle)/180 - gyro.getRate()/180)));
 		if(Math.abs(targetangle-currentangle)/180 < .04) rotating = false;
 		SmartDashboard.putNumber("target angle", targetangle);
@@ -197,13 +197,6 @@ public class Swerve extends Subsystem {
 		SmartDashboard.putNumber("ratio", (targetangle-currentangle)/180);
 
 
-	}
-	public void visionAlign(){
-		if(gyro.getAngle() != 0) startangle = (Math.round((gyro.getAngle()/360)))*360;
-		else startangle = 0;
-		angleRotation = gyro.getAngle()+vision.horizontal()-startangle;
-		lockwheels = false;
-		rotating = true;
 	}
 
 	public void move(){
@@ -242,23 +235,17 @@ public class Swerve extends Subsystem {
 			double z = joy1.getRawAxis(3);
 			if (Math.abs(z) < .2) z = 0;
 			double diff = Robot.ballSenseRight.getAverageVoltage()-Robot.ballSenseLeft.getAverageVoltage();
-			double avgd = (Robot.ballSenseLeft.getAverageVoltage()+Robot.ballSenseRight.getAverageVoltage())/2;
-			double constant = 1;
-			if(avgd ==0){
-				constant = .5*(1/avgd);
-			}
-			driveNormal(0, constant*(.25-.05*Math.abs(diff)), .035*diff+z*.2);
-			
+			driveNormal(0, .25-.05*Math.abs(diff), .05*diff+z*.2);
 			rotating = false;
 			lockwheels = false;
 			return;
-
+			
 			//set turn robot to gyro -20
-			//			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
-			//			else startangle = 0;
-			//			angleRotation = 120;
-			//			lockwheels = false;
-			//			rotating = true;
+//			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
+//			else startangle = 0;
+//			angleRotation = 120;
+//			lockwheels = false;
+//			rotating = true;
 		}
 		else if(joy1.getPOV() == 270){
 			//set turn robot to gyro 20
@@ -269,10 +256,15 @@ public class Swerve extends Subsystem {
 			rotating = true;
 		}
 		else if(joy1.getRawButton(ConstantFactory.B)){
-			visionAlign();
+			//set turn robot to gyro 20
+			if(gyro.getAngle() != 0) startangle = (Math.round(gyro.getAngle()/360))*360;
+			else startangle = 0;
+			angleRotation = gyro.getAngle()+vision.horizontal()-startangle;
+			lockwheels = false;
+			rotating = true;
 		}
 
-
+		
 		//if released toggle field orient
 
 		if(joy1.getRawButton(ConstantFactory.Y)){	
@@ -305,7 +297,7 @@ public class Swerve extends Subsystem {
 			if (Math.abs(x) < .2) x = 0;
 			if (Math.abs(y) < .2) y = 0;
 			if (Math.abs(z) < .2) z = 0;
-
+			
 			if((x!=0 || y!=0 || z!=0) && !drivingField){
 				driveNormal((x*60)/100, (-y*60)/100, (z/2));
 				lockwheels = false;
@@ -338,6 +330,46 @@ public class Swerve extends Subsystem {
 		modules[3].set(45, 0);
 	}
 
+	/**
+	 * 2D Mathematical Vector
+	 */
+	class Vector {
+		double x = 0, y = 0;
+
+		public Vector(double x, double y) {
+			this.x = x;
+			this.y = y;
+		}
+
+		public double getAngle() {
+			return Math.atan2(y, x);
+		}
+
+		public double getMagnitude() {
+			return Math.hypot(x, y);
+		}
+
+		public void scale(double scalar) {
+			x *= scalar;
+			y *= scalar;
+		}
+
+		public void add(Vector v) {
+			x += v.x;
+			y += v.y;
+		}
+
+		public void subtract(Vector v) {
+			x -= v.x;
+			y -= v.y;
+		}
+
+		public void makePerpendicular() {
+			double temp = x;
+			x = y;
+			y = -temp;
+		}
+	}
 
 	@Override
 	protected void initDefaultCommand() {

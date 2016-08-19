@@ -31,8 +31,8 @@ public class Robot extends IterativeRobot {
 	String spaceSelected;
 	SendableChooser chooser2;
 
-	double  startTime, runTime, alignTime;
-	boolean part1, part2, part3, defense, over, goingover,  stop, part4, part5;
+	double  startTime, runTime;
+	boolean part1, part2, part3;
 
 
 	public void robotInit() {
@@ -41,16 +41,21 @@ public class Robot extends IterativeRobot {
 		gyro = new Gyro();
 		vision = new Vision();
 		swerve = new Swerve(joy1, joy2, gyro, vision);
+<<<<<<< HEAD
 		tank = new Tank(joy1, swerve, gyro);
 		stinger = new Stinger(joy2);
 		actuator = new Actuator(joy2, vision);
+=======
+		tank = new Tank(joy1, joy2, swerve);
+		actuator = new Actuator(joy1, joy2, vision);
+		stinger = new Stinger(joy2);
+>>>>>>> parent of 4f751c5... Update
 
-		gyro.gyro.calibrate();
 		chooser = new SendableChooser();
 		chooser.addObject("Rock Wall", rockwall);
 		chooser.addObject("Low Bar", lowbar);
 		chooser.addObject("Ramparts", ramparts);
-		chooser.addObject("Moat", ramparts); 
+		chooser.addObject("Moat", ramparts);
 		SmartDashboard.putData("Autonomous:", chooser);
 		chooser2 = new SendableChooser();
 		chooser2.addObject("slot 1", "1");
@@ -61,6 +66,9 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putData("Space:", chooser2);
 
 
+		//    	CameraServer cam = CameraServer.getInstance();
+		//    	cam.setQuality(20);
+		//    	cam.startAutomaticCapture("cam0");
 	}
 
 
@@ -69,11 +77,8 @@ public class Robot extends IterativeRobot {
 		part1 = true;
 		part2 = true;
 		part3 = false;
-		part4 = false;
-		part5 = false;
 		startTime = System.currentTimeMillis();
-		runTime = 6000;
-		alignTime = 1500;
+		runTime = 10000;
 		autoSelected = (String) chooser.getSelected();
 		spaceSelected = (String) chooser2.getSelected();
 
@@ -101,17 +106,16 @@ public class Robot extends IterativeRobot {
 				part1 = false;
 			}
 		}if(part2){
-
 			swerve.autonomous(0, -.6, gyro.angleCorrect());
 			tank.autonomous(-1);
-			if((System.currentTimeMillis() >= startTime + runTime)){
+			if(System.currentTimeMillis() >= startTime + runTime){
 				swerve.autonomous(0, 0, 0);
 				tank.autonomous(0);
 				part2 = false;
 				part1 = false;
-				part3 = true;
 				Swerve.rotating = true;
 			}
+<<<<<<< HEAD
 		}if(part3){
 			if(Swerve.rotating)
 				swerve.pivot(180);
@@ -152,10 +156,21 @@ public class Robot extends IterativeRobot {
 				stinger.autoExtend();
 			else if(System.currentTimeMillis() <= startTime + 6000)
 				stinger.autoRetract();
+=======
+		}if(Swerve.rotating){
+			swerve.pivot(180);
+>>>>>>> parent of 4f751c5... Update
 		}
-
 	}
 
+<<<<<<< HEAD
+=======
+	/**
+	 * This function is called periodically during operator control
+	 */
+
+
+>>>>>>> parent of 4f751c5... Update
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		actuator.move();
@@ -163,12 +178,27 @@ public class Robot extends IterativeRobot {
 		swerve.move();
 		stinger.climb();
 		stinger.shoot();
+<<<<<<< HEAD
 		vision.process();
 		
+=======
+		stinger.flashlight();
+		vision.process();
+
+		//        if(i<100 && i> itemp){
+			//        	i++;
+		//        	itemp = i;
+		//        }else if(i>0 && itemp>i){
+		//        	i--;
+		//        	itemp = i;
+		//        }
+		//        SmartDashboard.putNumber("Duncan", i);
+
+>>>>>>> parent of 4f751c5... Update
 		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
-		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);
+		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI); 
 
 		SmartDashboard.putNumber("Left Ball Sensor", ballSenseLeft.getAverageVoltage());
 		SmartDashboard.putNumber("Right Ball Sensor", ballSenseRight.getAverageVoltage());
@@ -178,6 +208,11 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
+<<<<<<< HEAD
+=======
+		
+		Gyro.gyro.calibrate();
+>>>>>>> parent of 4f751c5... Update
 	}
 
 	public void testPeriodic() {
