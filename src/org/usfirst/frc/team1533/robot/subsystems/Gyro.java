@@ -2,26 +2,11 @@ package org.usfirst.frc.team1533.robot.subsystems;
 
 import edu.wpi.first.wpilibj.ADXRS450_Gyro;
 import edu.wpi.first.wpilibj.SPI;
-<<<<<<< HEAD
-<<<<<<< HEAD
-import edu.wpi.first.wpilibj.interfaces.Accelerometer.Range;
-
-public class Gyro {
-	public ADXRS450_Gyro gyro;
-	public ADXL362 acc;
-	public double currentangle;
-=======
-=======
->>>>>>> parent of 4f751c5... Update
 import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 
 public class Gyro {
 	public static ADXRS450_Gyro gyro;
 	double currentangle;
-<<<<<<< HEAD
->>>>>>> parent of 4f751c5... Update
-=======
->>>>>>> parent of 4f751c5... Update
 	
 	public Gyro(){
 		gyro = new ADXRS450_Gyro(SPI.Port.kOnboardCS0);
@@ -39,17 +24,9 @@ public class Gyro {
 	public double angleCorrect(){
 		return gyro.getAngle() * -.015;
 	}
-	
 	public void reset(){
 		gyro.reset();
 	}
-<<<<<<< HEAD
-<<<<<<< HEAD
-	
-=======
->>>>>>> parent of 4f751c5... Update
-=======
->>>>>>> parent of 4f751c5... Update
 	public double straight(boolean angle){
 		if(angle){
 			currentangle = gyro.getAngle();

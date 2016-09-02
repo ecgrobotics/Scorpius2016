@@ -235,7 +235,7 @@ public class Swerve extends Subsystem {
 			double z = joy1.getRawAxis(3);
 			if (Math.abs(z) < .2) z = 0;
 			double diff = Robot.ballSenseRight.getAverageVoltage()-Robot.ballSenseLeft.getAverageVoltage();
-			driveNormal(0, .25-.05*Math.abs(diff), .05*diff+z*.2);
+			driveNormal(0, .25-.025*Math.abs(diff), .025*diff+z*.3);
 			rotating = false;
 			lockwheels = false;
 			return;
@@ -318,7 +318,7 @@ public class Swerve extends Subsystem {
 	}
 	public void fullPower(){
 		if(!drivingField)
-			driveNormal(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100);
+		driveNormal(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100);
 		else
 			driveWithOrient(joy1.getX()*9/10, -joy1.getY()*9/10, joy1.getRawAxis(3)*55/100, true);
 	}
@@ -377,4 +377,3 @@ public class Swerve extends Subsystem {
 
 	}
 }
-

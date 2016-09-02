@@ -40,7 +40,7 @@ public class Stinger {
 	}
 
 	public void climb(){
-		double target = joy.getRawButton(ConstantFactory.A2) ? 1 :joy.getRawButton(ConstantFactory.Y2)? -1 : joy.getRawButton(ConstantFactory.X2) ? .25 : joy.getRawButton(ConstantFactory.B2) ? -.25 : 0;
+		double target = joy.getRawButton(ConstantFactory.A2) ? 1 :joy.getRawButton(ConstantFactory.Y2)? -1 : joy.getRawButton(ConstantFactory.X2) ? .25 : 0;
 		climbL.set(target);
 		climbR.set(-target);
 	}
@@ -58,27 +58,36 @@ public class Stinger {
 
 	public void shoot(){
 		SmartDashboard.putString("shooting", pewpew);
-		if (joy.getRawButton(ConstantFactory.RIGHT_BUMPER2)){
-			runShooter(0);
+		if (joy.getRawButton(ConstantFactory.RIGHT_BUMPER2) || joy.getRawButton(ConstantFactory.LEFT_BUMPER2)){
+			if(joy.getRawButton(ConstantFactory.RIGHT_BUMPER2))
+				runShooter(0, 1);
+			if(joy.getRawButton(ConstantFactory.LEFT_BUMPER2))
+				runShooter(0, .5);
 			if (shootStartTime < 0) shootStartTime = System.currentTimeMillis();
 			else if(System.currentTimeMillis()-shootStartTime > 50 && System.currentTimeMillis()-shootStartTime < 1250) runRoller(1);
 			else if (System.currentTimeMillis()-shootStartTime > 1250) runRoller(0);
 		}else if(joy.getRawButton(ConstantFactory.RIGHT_TRIGGER2) || Robot.joy1.getPOV()==90 || Robot.joy1.getPOV()==0){
-			runShooter(1);
+			runShooter(1, 1);
 			runRoller(1);
 			shootStartTime = -1;
 		}
+		else if(joy.getPOV() == 270){
+			runShooter(0,1);
+			if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER2))
+				runRoller(0);
+
+			}
 		else{
-			runShooter(2);
+			runShooter(2, 1);
 			runRoller(2);
 			shootStartTime = -1;
 		}
 	}
 
-	public void runShooter(int buttonPressed){
+	public void runShooter(int buttonPressed, double percent){
 		if(buttonPressed == 0){			//shoots ball
-			shooterL.set(-1);
-			shooterR.set(1);
+			shooterL.set(-1*percent);
+			shooterR.set(1*percent);
 			pewpew = "PEW! PEW!";
 		}else if(buttonPressed == 1){	//grabs ball
 			shooterL.set(.6);

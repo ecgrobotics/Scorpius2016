@@ -1,4 +1,3 @@
-
 package org.usfirst.frc.team1533.robot;
 
 import edu.wpi.first.wpilibj.AnalogInput;
@@ -10,15 +9,20 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 import org.usfirst.frc.team1533.robot.subsystems.*;
 
 public class Robot extends IterativeRobot {
+	//TODO Rumble on Joystick
+	//TODO Easier encoder setting
+	//TODO Defense skipping
 	Swerve swerve;
 	Actuator actuator;
 	Tank tank;
 	Stinger stinger;
-	public static Joystick joy1, joy2;
+	public static Joystick joy1, joy2, joy3;
 	Gyro gyro;
 	Vision vision;
 	public static AnalogInput ballSenseLeft = new AnalogInput(5);
 	public static AnalogInput ballSenseRight = new AnalogInput(6);
+	double alignTime;
+	
 
 
 	final String lowbar = "lowBar";
@@ -32,30 +36,18 @@ public class Robot extends IterativeRobot {
 	SendableChooser chooser2;
 
 	double  startTime, runTime;
-	boolean part1, part2, part3;
+	boolean part1, part2, part3, part4, part5;
 
 
 	public void robotInit() {
 		joy1 = new Joystick(0);
 		joy2 = new Joystick(1);
 		gyro = new Gyro();
-		vision = new Vision();
+		vision = new Vision(joy1, joy2);
 		swerve = new Swerve(joy1, joy2, gyro, vision);
-<<<<<<< HEAD
-<<<<<<< HEAD
-		tank = new Tank(joy1, swerve, gyro);
-		stinger = new Stinger(joy2);
-		actuator = new Actuator(joy2, vision);
-=======
 		tank = new Tank(joy1, joy2, swerve);
 		actuator = new Actuator(joy1, joy2, vision);
 		stinger = new Stinger(joy2);
->>>>>>> parent of 4f751c5... Update
-=======
-		tank = new Tank(joy1, joy2, swerve);
-		actuator = new Actuator(joy1, joy2, vision);
-		stinger = new Stinger(joy2);
->>>>>>> parent of 4f751c5... Update
 
 		chooser = new SendableChooser();
 		chooser.addObject("Rock Wall", rockwall);
@@ -77,21 +69,31 @@ public class Robot extends IterativeRobot {
 		//    	cam.startAutomaticCapture("cam0");
 	}
 
-
+	/**
+	 * This autonomous (along with the chooser code above) shows how to select between different autonomous modes
+	 * using the dashboard. The sendable chooser code works with the Java SmartDashboard. If you prefer the LabVIEW
+	 * Dashboard, remove all of the chooser code and uncomment the getString line to get the auto name from the text box
+	 * below the Gyro
+	 *
+	 * You can add additional auto modes by adding additional comparisons to the switch structure below with additional strings.
+	 * If using the SendableChooser make sure to add them to the chooser code above as well.
+	 */
 	public void autonomousInit() {
 		gyro.reset();
 		part1 = true;
 		part2 = true;
 		part3 = false;
+		part4 = false;
+		part5 = false;
 		startTime = System.currentTimeMillis();
-		runTime = 10000;
+		runTime = 6000;
+		alignTime = 1500;
 		autoSelected = (String) chooser.getSelected();
-		spaceSelected = (String) chooser2.getSelected();
+		spaceSelected = (String) chooser2.getSelected();	}
 
-		System.out.println("Auto selected: " + autoSelected);
-	}
-
-
+	/**
+	 * This function is called periodically during autonomous
+	 */
 	public void autonomousPeriodic() {
 		switch(autoSelected) {
 		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
@@ -112,17 +114,17 @@ public class Robot extends IterativeRobot {
 				part1 = false;
 			}
 		}if(part2){
+
 			swerve.autonomous(0, -.6, gyro.angleCorrect());
 			tank.autonomous(-1);
-			if(System.currentTimeMillis() >= startTime + runTime){
+			if((System.currentTimeMillis() >= startTime + runTime)){
 				swerve.autonomous(0, 0, 0);
 				tank.autonomous(0);
 				part2 = false;
 				part1 = false;
+				part3 = true;
 				Swerve.rotating = true;
 			}
-<<<<<<< HEAD
-<<<<<<< HEAD
 		}if(part3){
 			if(Swerve.rotating)
 				swerve.pivot(180);
@@ -158,30 +160,49 @@ public class Robot extends IterativeRobot {
 					startTime = System.currentTimeMillis();
 				}
 			}
-		}if(part5){
-			if(System.currentTimeMillis() <= startTime + 2000)
-				stinger.autoExtend();
-			else if(System.currentTimeMillis() <= startTime + 6000)
-				stinger.autoRetract();
-=======
-		}if(Swerve.rotating){
-			swerve.pivot(180);
->>>>>>> parent of 4f751c5... Update
-=======
-		}if(Swerve.rotating){
-			swerve.pivot(180);
->>>>>>> parent of 4f751c5... Update
 		}
+
 	}
 
-<<<<<<< HEAD
-=======
+/*	public void autonomousPeriodic() {
+		switch(autoSelected) {
+		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
+		runTime =4750;
+		break;
+		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.44;
+		runTime = 4000;
+		break;
+		case lowbar: 
+			ConstantFactory.Steering.bottomVoltage = .31;
+			runTime = 4550;
+			break;
+		}
+		Scheduler.getInstance().run();
+		if(part1){
+			if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
+			else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
+				part1 = false;
+			}
+		}if(part2){
+			swerve.autonomous(0, -.6, gyro.angleCorrect());
+			tank.autonomous(-1);
+			if(System.currentTimeMillis() >= startTime + runTime){
+				swerve.autonomous(0, 0, 0);
+				tank.autonomous(0);
+				part2 = false;
+				part1 = false;
+				Swerve.rotating = true;
+			}
+		}if(Swerve.rotating){
+			swerve.pivot(180);
+		}
+	}
+*/
 	/**
 	 * This function is called periodically during operator control
 	 */
 
 
->>>>>>> parent of 4f751c5... Update
 	public void teleopPeriodic() {
 		Scheduler.getInstance().run();
 		actuator.move();
@@ -189,26 +210,10 @@ public class Robot extends IterativeRobot {
 		swerve.move();
 		stinger.climb();
 		stinger.shoot();
-<<<<<<< HEAD
-		vision.process();
-		
-=======
 		stinger.flashlight();
 		vision.process();
 
-		//        if(i<100 && i> itemp){
-			//        	i++;
-		//        	itemp = i;
-		//        }else if(i>0 && itemp>i){
-		//        	i--;
-		//        	itemp = i;
-		//        }
-		//        SmartDashboard.putNumber("Duncan", i);
-
-<<<<<<< HEAD
->>>>>>> parent of 4f751c5... Update
-=======
->>>>>>> parent of 4f751c5... Update
+		SmartDashboard.putNumber("gyro", gyro.getAngle());
 		SmartDashboard.putNumber("FL Encoder", swerve.modules[0].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
@@ -222,16 +227,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
-<<<<<<< HEAD
-<<<<<<< HEAD
-=======
 		
-		Gyro.gyro.calibrate();
->>>>>>> parent of 4f751c5... Update
-=======
-		
-		Gyro.gyro.calibrate();
->>>>>>> parent of 4f751c5... Update
 	}
 
 	public void testPeriodic() {

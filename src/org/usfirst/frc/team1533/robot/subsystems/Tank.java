@@ -3,25 +3,18 @@ package org.usfirst.frc.team1533.robot.subsystems;
 import org.usfirst.frc.team1533.robot.ConstantFactory;
 
 import edu.wpi.first.wpilibj.Joystick;
+import edu.wpi.first.wpilibj.RobotDrive;
 import edu.wpi.first.wpilibj.Spark;
 
 public class Tank {
+	RobotDrive drive;
 	Joystick joy;
 	double speedX, speedY;
 	Swerve swerve;
 	Spark left, right;
 
-<<<<<<< HEAD
-<<<<<<< HEAD
-	public Tank(Joystick joy1, Swerve swerve, Gyro gyro){
-=======
 
 	public Tank(Joystick joy1, Joystick joy2, Swerve swerve){
->>>>>>> parent of 4f751c5... Update
-=======
-
-	public Tank(Joystick joy1, Joystick joy2, Swerve swerve){
->>>>>>> parent of 4f751c5... Update
 		this.swerve = swerve;
 		this.joy = joy1;
 				drive = new RobotDrive(ConstantFactory.L_TREAD, ConstantFactory.R_TREAD);
