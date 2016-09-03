@@ -22,7 +22,7 @@ public class Robot extends IterativeRobot {
 	public static AnalogInput ballSenseLeft = new AnalogInput(5);
 	public static AnalogInput ballSenseRight = new AnalogInput(6);
 	double alignTime;
-	
+
 
 
 	final String lowbar = "lowBar";
@@ -36,7 +36,7 @@ public class Robot extends IterativeRobot {
 	SendableChooser chooser2;
 
 	double  startTime, runTime;
-	boolean part1, part2, part3, part4, part5;
+	boolean part1, part2, part3, part4, part5, loop, part6;
 
 
 	public void robotInit() {
@@ -85,6 +85,9 @@ public class Robot extends IterativeRobot {
 		part3 = false;
 		part4 = false;
 		part5 = false;
+		part6 = false;
+		loop = true;
+		Actuator.pid.disable();
 		startTime = System.currentTimeMillis();
 		runTime = 6000;
 		alignTime = 1500;
@@ -95,12 +98,17 @@ public class Robot extends IterativeRobot {
 	 * This function is called periodically during autonomous
 	 */
 	public void autonomousPeriodic() {
+		SmartDashboard.putBoolean("part 3", part3);
+		SmartDashboard.putBoolean("string 4", part4);
+		SmartDashboard.putBoolean("part 5", part5);
+		SmartDashboard.putBoolean("part 6", part6);
+		SmartDashboard.putNumber("vertical", vision.vertical());
 		switch(autoSelected) {
 		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
 		runTime =4750;
 		break;
 		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.44;
-		runTime = 4000;
+		runTime = 4250;
 		break;
 		case lowbar: 
 			ConstantFactory.Steering.bottomVoltage = .31;
@@ -109,62 +117,76 @@ public class Robot extends IterativeRobot {
 		}
 		Scheduler.getInstance().run();
 		if(part1){
-			if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
-			else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
-				part1 = false;
-			}
+						if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
+						else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
+							part1 = false;
+						}
 		}if(part2){
 
-			swerve.autonomous(0, -.6, gyro.angleCorrect());
-			tank.autonomous(-1);
-			if((System.currentTimeMillis() >= startTime + runTime)){
-				swerve.autonomous(0, 0, 0);
-				tank.autonomous(0);
-				part2 = false;
-				part1 = false;
-				part3 = true;
-				Swerve.rotating = true;
-			}
+						swerve.autonomous(0, -.6, gyro.angleCorrect());
+						tank.autonomous(-1);
+						if((System.currentTimeMillis() >= startTime + runTime)){
+							swerve.autonomous(0, 0, 0);
+							tank.autonomous(0);
+							part2 = false;
+							part1 = false;
+							part2 = false;
+							part3 = true;
+						}
+
 		}if(part3){
-			if(Swerve.rotating)
-				swerve.pivot(180);
-			startTime = System.currentTimeMillis();
-		}
-		else if(!Swerve.rotating){
-			if(System.currentTimeMillis() >= startTime + alignTime)
-				swerve.visionAlign();
+			vision.process();
+
+			Actuator.pid.enable();
+			Actuator.pid.setSetpoint(3);
+			if(vision.horizontal() == 0)
+				swerve.driveNormal(0, 0, .2);
 			else{
+				swerve.driveNormal(0, 0, 0);
+				startTime = System.currentTimeMillis();
 				part3 = false;
 				part4 = true;
-				Swerve.rotating = true;
 			}
 		}
+
 		if(part4){
-			if(Swerve.rotating){
-				swerve.pivot(180);
-				startTime = System.currentTimeMillis();
+			if(!Swerve.rotating && loop){
+				if(gyro.getAngle() != 0) Swerve.startangle = (Math.round(gyro.getAngle()/360))*360;
+				else Swerve.startangle = 0;
+				Swerve.rotating = true;
+				loop = false;
+			}else if(Swerve.rotating){
+				vision.process();
+				Swerve.angleRotation = gyro.getAngle()+vision.horizontal()-Swerve.startangle;
+				swerve.pivot(Swerve.angleRotation);
 			}
 			else{
-				if(gyro.acc.getX() <= 2.6 || System.currentTimeMillis() <= startTime +500){
-					swerve.autonomous(0, -.6, gyro.angleCorrect());
-					tank.autonomous(1);
-				}
-				else if(actuator.getAverageVoltage() <= 3.7 ){
-					actuator.autonomous(4);
-					tank.autonomous(.5);
-					swerve.autonomous(0, -.3, gyro.angleCorrect());
-				}
-				else{
-					part4 = false;
-					part5 = true;
-					startTime = System.currentTimeMillis();
-				}
+				part4 = false;
+				part5 = true;
 			}
 		}
-
+		if(part5){
+		 	vision.process();
+			if(vision.vertical() == 0)
+				Actuator.pid.setSetpoint(2);
+			else
+				Actuator.pid.setSetpoint(vision.vertical());
+			if(actuator.getAverageVoltage() < (vision.vertical() + 1) && actuator.getAverageVoltage() > (vision.vertical() -1)){
+				//				part5 = false;
+				//				part6 = true;
+				startTime = System.currentTimeMillis();
+				part5 = false;
+				part6 = true;
+			}
+		}
+		if(part6){
+			//			Actuator.pid.disable();
+			Stinger.auto(startTime);
+		}
 	}
 
-/*	public void autonomousPeriodic() {
+
+	/*	public void autonomousPeriodic() {
 		switch(autoSelected) {
 		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
 		runTime =4750;
@@ -197,7 +219,7 @@ public class Robot extends IterativeRobot {
 			swerve.pivot(180);
 		}
 	}
-*/
+	 */
 	/**
 	 * This function is called periodically during operator control
 	 */
@@ -227,7 +249,7 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("FR Encoder", swerve.modules[1].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BL Encoder", swerve.modules[2].getAngle()*180/Math.PI);
 		SmartDashboard.putNumber("BR Encoder", swerve.modules[3].getAngle()*180/Math.PI);    
-		
+
 	}
 
 	public void testPeriodic() {

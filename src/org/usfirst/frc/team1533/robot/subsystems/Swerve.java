@@ -16,7 +16,8 @@ import org.usfirst.frc.team1533.robot.Robot;
  *
  */
 public class Swerve extends Subsystem {
-	double pivotX, pivotY, lastpressed, startangle, angleRotation, transAngle, pivotspeed;
+	public double pivotX, pivotY, lastpressed, transAngle, pivotspeed;
+	public static double angleRotation, startangle;
 	boolean lockwheels, drivingField, ypressed;
 	public static boolean rotating, angle;
 	public SwerveModule[] modules;
@@ -191,10 +192,13 @@ public class Swerve extends Subsystem {
 		double targetangle = startangle + degrees;
 //		driveNormal(0,0,(targetangle-currentangle)/180);
 		driveNormal(0, 0, Math.max(-.25, Math.min(.25, (targetangle-currentangle)/180 - gyro.getRate()/180)));
-		if(Math.abs(targetangle-currentangle)/180 < .04) rotating = false;
+		if(Math.abs(targetangle-currentangle)/180 < .04){
+			rotating = false;
+			driveNormal(0,0,0);
+		}
 		SmartDashboard.putNumber("target angle", targetangle);
 		SmartDashboard.putNumber("current angle", currentangle);
-		SmartDashboard.putNumber("ratio", (targetangle-currentangle)/180);
+		SmartDashboard.putNumber("ratio", (targetangle-currentangle)/degrees);
 
 
 	}

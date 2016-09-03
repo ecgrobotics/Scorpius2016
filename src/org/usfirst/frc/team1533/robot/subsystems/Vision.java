@@ -15,7 +15,7 @@ public class Vision {
 	double[][] nt;
 	int index;
 	boolean toggle, p;
-	double centery;
+	double centery, setpoint;
 
 	public Vision(Joystick joy1, Joystick joy2){
 		toggle = false;
@@ -25,6 +25,7 @@ public class Vision {
 		table = NetworkTable.getTable("GRIP/myContoursReport");
 		defaultValue = new double[0];
 		centery = 0;
+		setpoint = 0;
 	}
 	
 	public void process(){
@@ -54,7 +55,7 @@ public class Vision {
 		try {
 			centery = y[index];
 			SmartDashboard.putNumber("Centery", centery);
-			double setpoint =  3.113 - (y[index]*.004375) - (3.819 * Math.pow(10, -6)* Math.pow(y[index], 2)) + (9.336 * Math.pow(10, -8)* Math.pow(y[index], 3));
+			setpoint =  3.113 - (y[index]*.004375) - (3.819 * Math.pow(10, -6)* Math.pow(y[index], 2)) + (9.336 * Math.pow(10, -8)* Math.pow(y[index], 3));
 			return setpoint;
 		} catch (Exception e) {
 			return 0;

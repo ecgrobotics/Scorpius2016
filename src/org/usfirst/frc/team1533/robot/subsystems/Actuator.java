@@ -14,7 +14,7 @@ public class Actuator implements PIDOutput {
 	SpeedController actuator;
 	AnalogInput encoder;
 	Joystick joy1, joy2;
-	PIDController pid;
+	public static PIDController pid;
 	Vision vision;
 	static double speed;
 
@@ -91,4 +91,5 @@ public class Actuator implements PIDOutput {
 			actuator.set(lerp(output));
 		}else actuator.set(output);
 	}
+
 }

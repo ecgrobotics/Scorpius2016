@@ -14,9 +14,9 @@ import edu.wpi.first.wpilibj.smartdashboard.SmartDashboard;
 public class Stinger {
 	SpeedController climbR;
 	SpeedController climbL;
-	SpeedController shooterR;
-	SpeedController shooterL;
-	SpeedController roller;
+	static SpeedController shooterR;
+	static SpeedController shooterL;
+	static SpeedController roller;
 	Timer timer;
 	Joystick joy;
 	double shootStartTime;
@@ -76,7 +76,7 @@ public class Stinger {
 			if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER2))
 				runRoller(0);
 
-			}
+		}
 		else{
 			runShooter(2, 1);
 			runRoller(2);
@@ -84,26 +84,29 @@ public class Stinger {
 		}
 	}
 
-	public void runShooter(int buttonPressed, double percent){
+	public static void runShooter(int buttonPressed, double percent){
 		if(buttonPressed == 0){			//shoots ball
 			shooterL.set(-1*percent);
 			shooterR.set(1*percent);
-			pewpew = "PEW! PEW!";
 		}else if(buttonPressed == 1){	//grabs ball
 			shooterL.set(.6);
 			shooterR.set(-.6);
-			pewpew = "grab";
 		}else{
 			shooterL.set(0);
 			shooterR.set(0);
-			pewpew = "no";
 		}
 	}
 
-	public void runRoller(int buttonPressed){
+	public static void runRoller(int buttonPressed){
 		if(buttonPressed == 0)	roller.set(1);			//out
 		else if(buttonPressed == 1)	roller.set(-.4);	//in
 		else roller.set(0);
+	}
+	static public void auto(double start){
+		runShooter(0, 1);
+		if(System.currentTimeMillis() >= (start+ 750)){
+			runRoller(0);
+		}
 	}
 
 
