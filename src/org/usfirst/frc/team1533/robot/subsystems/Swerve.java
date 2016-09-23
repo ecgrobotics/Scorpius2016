@@ -206,7 +206,7 @@ public class Swerve extends Subsystem {
 	public void move(){
 		//		if(!SmartDashboard.getBoolean("DEBUG MODE")){
 
-		SmartDashboard.putBoolean("field orient?", drivingField);
+		SmartDashboard.putBoolean("fieldorient", drivingField);
 		SmartDashboard.putNumber("Current Gyro Angle", gyro.getAngle());
 		SmartDashboard.putNumber("Angle to rotate to", angleRotation);
 
@@ -217,7 +217,7 @@ public class Swerve extends Subsystem {
 				angle = true;
 				i = 1;
 			}
-			driveNormal(0, .257, gyro.straight(angle));
+			driveNormal(0, .3, gyro.straight(angle));
 			rotating = false;
 			lockwheels = false;
 			return;
@@ -239,7 +239,7 @@ public class Swerve extends Subsystem {
 			double z = joy1.getRawAxis(3);
 			if (Math.abs(z) < .2) z = 0;
 			double diff = Robot.ballSenseRight.getAverageVoltage()-Robot.ballSenseLeft.getAverageVoltage();
-			driveNormal(0, .25-.025*Math.abs(diff), .025*diff+z*.3);
+			driveNormal(0, .3-.03*Math.abs(diff), .03*diff+z*.3);
 			rotating = false;
 			lockwheels = false;
 			return;
@@ -271,7 +271,7 @@ public class Swerve extends Subsystem {
 		
 		//if released toggle field orient
 
-		if(joy1.getRawButton(ConstantFactory.Y)){	
+		if(joy1.getRawButton(ConstantFactory.A)){	
 			System.out.println("y pressed");
 			if (!ypressed) drivingField = !drivingField;
 			ypressed = true;
@@ -328,7 +328,6 @@ public class Swerve extends Subsystem {
 	}
 
 	public void lockWheels(){
-		modules[0].set(45, 0);
 		modules[1].set(-45, 0);
 		modules[2].set(-45, 0);
 		modules[3].set(45, 0);

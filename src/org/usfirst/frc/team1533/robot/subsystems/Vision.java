@@ -55,8 +55,9 @@ public class Vision {
 		try {
 			centery = y[index];
 			SmartDashboard.putNumber("Centery", centery);
-			setpoint =  3.113 - (y[index]*.004375) - (3.819 * Math.pow(10, -6)* Math.pow(y[index], 2)) + (9.336 * Math.pow(10, -8)* Math.pow(y[index], 3));
+			setpoint =  2.945 + (y[index]*.0002829) - (.0001306 * Math.pow(y[index], 2)) + (1.228 * Math.pow(10, -6)* Math.pow(y[index], 3)-(3.169 * Math.pow(10, -9)* Math.pow(y[index], 4)));
 			return setpoint;
+			
 		} catch (Exception e) {
 			return 0;
 		}
@@ -65,7 +66,8 @@ public class Vision {
 		double[] x = table.getNumberArray("centerX", defaultValue);
 		//rand operation to transform x to rotation setpoint
 		try {
-			double rotate = (x[index]-160-23)/320d*50*10.01;
+			double rotate = (x[index]-160-25)/320d*50*10.01;
+			System.out.println("vision class: "+ rotate);
 			return rotate;
 		} catch (Exception e) {
 			return 0;

@@ -21,7 +21,7 @@ public class Robot extends IterativeRobot {
 	Vision vision;
 	public static AnalogInput ballSenseLeft = new AnalogInput(5);
 	public static AnalogInput ballSenseRight = new AnalogInput(6);
-	double alignTime;
+	double alignTime, special;
 
 
 
@@ -35,7 +35,7 @@ public class Robot extends IterativeRobot {
 	String spaceSelected;
 	SendableChooser chooser2;
 
-	double  startTime, runTime;
+	double  startTime, runTime, startTime2, startTime3;
 	boolean part1, part2, part3, part4, part5, loop, part6;
 
 
@@ -45,7 +45,7 @@ public class Robot extends IterativeRobot {
 		gyro = new Gyro();
 		vision = new Vision(joy1, joy2);
 		swerve = new Swerve(joy1, joy2, gyro, vision);
-		tank = new Tank(joy1, joy2, swerve);
+		tank = new Tank(joy1, swerve, gyro);
 		actuator = new Actuator(joy1, joy2, vision);
 		stinger = new Stinger(joy2);
 
@@ -54,14 +54,14 @@ public class Robot extends IterativeRobot {
 		chooser.addObject("Low Bar", lowbar);
 		chooser.addObject("Ramparts", ramparts);
 		chooser.addObject("Moat", ramparts);
-		SmartDashboard.putData("Autonomous:", chooser);
+		SmartDashboard.putData("defense", chooser);
 		chooser2 = new SendableChooser();
 		chooser2.addObject("slot 1", "1");
 		chooser2.addObject("slot 2", "2");
 		chooser2.addObject("slot 3", "3");
 		chooser2.addObject("slot 4", "4");
 		chooser2.addObject("slot 5", "5");
-		SmartDashboard.putData("Space:", chooser2);
+		SmartDashboard.putData("position", chooser2);
 
 
 		//    	CameraServer cam = CameraServer.getInstance();
@@ -92,7 +92,9 @@ public class Robot extends IterativeRobot {
 		runTime = 6000;
 		alignTime = 1500;
 		autoSelected = (String) chooser.getSelected();
-		spaceSelected = (String) chooser2.getSelected();	}
+		spaceSelected = (String) chooser2.getSelected();
+		special = 0;
+	}
 
 	/**
 	 * This function is called periodically during autonomous
@@ -117,30 +119,29 @@ public class Robot extends IterativeRobot {
 		}
 		Scheduler.getInstance().run();
 		if(part1){
-						if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
-						else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
-							part1 = false;
-						}
+			if(actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage || actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage) actuator.autonomous(ConstantFactory.Steering.bottomVoltage);
+			else if(actuator.getAverageVoltage() < ConstantFactory.Steering.bottomVoltage + .05 && actuator.getAverageVoltage() > ConstantFactory.Steering.bottomVoltage - .05){
+				part1 = false;
+			}
 		}if(part2){
 
-						swerve.autonomous(0, -.6, gyro.angleCorrect());
-						tank.autonomous(-1);
-						if((System.currentTimeMillis() >= startTime + runTime)){
-							swerve.autonomous(0, 0, 0);
-							tank.autonomous(0);
-							part2 = false;
-							part1 = false;
-							part2 = false;
-							part3 = true;
-						}
-
-		}if(part3){
-			vision.process();
+			swerve.autonomous(0, -.6, gyro.angleCorrect());
+			tank.autonomous(-1);
+			if((System.currentTimeMillis() >= startTime + runTime)){
+				swerve.autonomous(0, 0, 0);
+				tank.autonomous(0);
+				part2 = false;
+				part1 = false;
+				part3 = true;
+				startTime3 = System.currentTimeMillis();
+			}
+		}
+		if(part3){
 
 			Actuator.pid.enable();
 			Actuator.pid.setSetpoint(3);
-			if(vision.horizontal() == 0)
-				swerve.driveNormal(0, 0, .2);
+			if((Math.abs(vision.horizontal()) < 5) || (System.currentTimeMillis() < startTime3 + 3000))
+				swerve.driveNormal(0, 0, -.25);
 			else{
 				swerve.driveNormal(0, 0, 0);
 				startTime = System.currentTimeMillis();
@@ -150,41 +151,60 @@ public class Robot extends IterativeRobot {
 		}
 
 		if(part4){
+			vision.process();
 			if(!Swerve.rotating && loop){
 				if(gyro.getAngle() != 0) Swerve.startangle = (Math.round(gyro.getAngle()/360))*360;
 				else Swerve.startangle = 0;
-				Swerve.rotating = true;
 				loop = false;
-			}else if(Swerve.rotating){
+			}else if(Math.abs(vision.horizontal()) > 15 ){
 				vision.process();
-				Swerve.angleRotation = gyro.getAngle()+vision.horizontal()-Swerve.startangle;
-				swerve.pivot(Swerve.angleRotation);
+				swerve.driveNormal(0, 0, Math.max(-.25, Math.min(.25, (vision.horizontal()*1.2)/180 - gyro.getRate()/180)));
+//				Swerve.angleRotation = (gyro.getAngle()+vision.horizontal() + 7)-Swerve.startangle;
+				System.out.println("autonomous: "+ vision.horizontal());
+//				swerve.pivot(Swerve.angleRotation);
 			}
 			else{
-				part4 = false;
+				swerve.driveNormal(0, 0, Math.max(-.25, Math.min(.25, (vision.horizontal()*1.2)/180 - gyro.getRate()/180)));
+				part4 = true;
 				part5 = true;
+				startTime2 = System.currentTimeMillis();
 			}
 		}
 		if(part5){
-		 	vision.process();
+			vision.process();
 			if(vision.vertical() == 0)
-				Actuator.pid.setSetpoint(2);
+				Actuator.pid.setSetpoint(2.6);
 			else
 				Actuator.pid.setSetpoint(vision.vertical());
-			if(actuator.getAverageVoltage() < (vision.vertical() + 1) && actuator.getAverageVoltage() > (vision.vertical() -1)){
+			if((actuator.getAverageVoltage() < (vision.vertical() +.1) && actuator.getAverageVoltage() > (vision.vertical()+.025)) || (System.currentTimeMillis() > startTime2 + 750)){
 				//				part5 = false;
 				//				part6 = true;
-				startTime = System.currentTimeMillis();
+				if(special == 0){
+					startTime = System.currentTimeMillis();
+					special = -1;
+				}
 				part5 = false;
 				part6 = true;
 			}
 		}
 		if(part6){
 			//			Actuator.pid.disable();
-			Stinger.auto(startTime);
+
+			if(startTime + 1250 > System.currentTimeMillis()){
+				Stinger.runShooter(0, 1);
+
+			}
+			else if(startTime + 1250 < System.currentTimeMillis() && startTime +2000 > System.currentTimeMillis()){
+				Stinger.runShooter(0, 1);
+				Stinger.runRoller(0);
+			}else {
+				Stinger.runShooter(2, 1);
+				Stinger.runRoller(2);
+			}
 		}
 	}
 
+	
 
 	/*	public void autonomousPeriodic() {
 		switch(autoSelected) {

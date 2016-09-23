@@ -34,7 +34,7 @@ public class Actuator implements PIDOutput {
 	}
 
 	public void move(){
-		SmartDashboard.putNumber("setpoin", vision.vertical());
+		SmartDashboard.putNumber("actuatorsetpoint", vision.vertical());
 		if(joy2.getPOV() == 0){
 			pid.disable();
 			actuator.set(lerp(1));
@@ -49,7 +49,9 @@ public class Actuator implements PIDOutput {
 		}
 		else if(joy2.getPOV() == 270){
 			pid.enable();
-			pid.setSetpoint(vision.vertical()+.1);
+			if(vision.vertical() != 0)
+				pid.setSetpoint(vision.vertical()+.1);
+			else pid.setSetpoint(2.66);
 		}
 
 		else{
@@ -57,7 +59,7 @@ public class Actuator implements PIDOutput {
 			actuator.set(lerp(0));
 		}
 //		dashboard();
-		SmartDashboard.putNumber("voltage", getAverageVoltage());
+		SmartDashboard.putNumber("actuatorvoltage", getAverageVoltage());
 	}
 	public void autonomous(double voltage){
 		actuator.set((voltage - encoder.getAverageVoltage())*2);

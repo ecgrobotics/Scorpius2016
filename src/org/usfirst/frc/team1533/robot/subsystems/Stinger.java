@@ -41,8 +41,8 @@ public class Stinger {
 
 	public void climb(){
 		double target = joy.getRawButton(ConstantFactory.A2) ? 1 :joy.getRawButton(ConstantFactory.Y2)? -1 : joy.getRawButton(ConstantFactory.X2) ? .25 : 0;
-		climbL.set(target);
-		climbR.set(-target);
+		climbL.set(-target);
+		climbR.set(target);
 	}
 	public void flashlight(){
 		if(joy.getRawButton(ConstantFactory.LEFT_BUMPER2)){
@@ -103,8 +103,10 @@ public class Stinger {
 		else roller.set(0);
 	}
 	static public void auto(double start){
-		runShooter(0, 1);
-		if(System.currentTimeMillis() >= (start+ 750)){
+		if(System.currentTimeMillis() < (start+100))
+			runShooter(0,1);
+		else if((System.currentTimeMillis() >= (start+ 1000)) && (System.currentTimeMillis() <= (start+1750))){
+			runShooter(0,1);
 			runRoller(0);
 		}
 	}
