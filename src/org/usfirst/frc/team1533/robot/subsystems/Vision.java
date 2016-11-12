@@ -55,7 +55,8 @@ public class Vision {
 		try {
 			centery = y[index];
 			SmartDashboard.putNumber("Centery", centery);
-			setpoint =  2.945 + (y[index]*.0002829) - (.0001306 * Math.pow(y[index], 2)) + (1.228 * Math.pow(10, -6)* Math.pow(y[index], 3)-(3.169 * Math.pow(10, -9)* Math.pow(y[index], 4)));
+			//previous constant 2.945
+			setpoint =  3.05 + (y[index]*.0002829) - (.0001306 * Math.pow(y[index], 2)) + (1.228 * Math.pow(10, -6)* Math.pow(y[index], 3)-(3.169 * Math.pow(10, -9)* Math.pow(y[index], 4)));
 			return setpoint;
 			
 		} catch (Exception e) {

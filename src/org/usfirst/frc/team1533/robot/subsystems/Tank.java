@@ -26,11 +26,11 @@ public class Tank {
 		double angle = gyro.getAngle() * Math.PI / 180;
 		if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER)){
 			if(swerve.drivingField){
-				transx = (-joy.getX()*Math.cos(angle) - joy.getY()*Math.sin(angle));
-				transy = -joy.getX()*Math.sin(angle) + joy.getY()*Math.cos(angle);
+				transx = Math.min(Math.max(-1,2*(-joy.getX()*Math.cos(angle) - joy.getY()*Math.sin(angle))), 1);
+				transy = Math.min(Math.max(-1,2*(-joy.getX()*Math.sin(angle) + joy.getY()*Math.cos(angle))), 1);
 			}else{
-				transx = joy.getX();
-				transy = joy.getY();
+				transx = Math.min(Math.max(-1, 2*joy.getX()), 1);
+				transy = Math.min(Math.max(-1,2*joy.getY()), 1);
 			}
 			left.set((transy-transx));
 			right.set((transy + transx));
@@ -43,7 +43,7 @@ public class Tank {
 	}
 
 	public void autonomous(double speed){
-		right.set(speed);
-		left.set(speed);
+		right.set(-speed);
+		left.set(-speed);
 	}
 }

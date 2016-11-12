@@ -107,14 +107,14 @@ public class Robot extends IterativeRobot {
 		SmartDashboard.putNumber("vertical", vision.vertical());
 		switch(autoSelected) {
 		case rockwall: ConstantFactory.Steering.bottomVoltage = 1.44;
-		runTime =4750;
+		runTime =5250;
 		break;
 		case ramparts:  ConstantFactory.Steering.bottomVoltage = 1.44;
-		runTime = 4250;
+		runTime = 4650;
 		break;
 		case lowbar: 
 			ConstantFactory.Steering.bottomVoltage = .31;
-			runTime = 4550;
+			runTime = 4250;
 			break;
 		}
 		Scheduler.getInstance().run();

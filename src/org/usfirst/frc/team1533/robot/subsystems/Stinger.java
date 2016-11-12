@@ -71,11 +71,12 @@ public class Stinger {
 			runRoller(1);
 			shootStartTime = -1;
 		}
+
 		else if(joy.getPOV() == 270){
 			runShooter(0,1);
 			if(joy.getRawButton(ConstantFactory.LEFT_TRIGGER2))
 				runRoller(0);
-
+			shootStartTime = -1;
 		}
 		else{
 			runShooter(2, 1);

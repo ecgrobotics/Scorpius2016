@@ -271,7 +271,7 @@ public class Swerve extends Subsystem {
 		
 		//if released toggle field orient
 
-		if(joy1.getRawButton(ConstantFactory.A)){	
+		if(joy1.getRawButton(ConstantFactory.X)){	
 			System.out.println("y pressed");
 			if (!ypressed) drivingField = !drivingField;
 			ypressed = true;
@@ -298,16 +298,13 @@ public class Swerve extends Subsystem {
 			double x = joy1.getX();
 			double y = joy1.getY();
 			double z = joy1.getRawAxis(3);
-			if (Math.abs(x) < .2) x = 0;
-			if (Math.abs(y) < .2) y = 0;
-			if (Math.abs(z) < .2) z = 0;
-			
-			if((x!=0 || y!=0 || z!=0) && !drivingField){
+
+			if((Math.abs(x) > .5 || Math.abs(y)>.5 || Math.abs(z)>.5) && !drivingField){
 				driveNormal((x*60)/100, (-y*60)/100, (z/2));
 				lockwheels = false;
 				rotating = false;
 			}
-			else if((x!=0 || y!=0 || z!=0) && drivingField){
+			else if((Math.abs(x) > .5 || Math.abs(y)>.5 || Math.abs(z)>.5) && drivingField){
 				driveField((x*60)/100, (-y*60)/100, (z/2));
 				lockwheels = false;
 				rotating = false;
